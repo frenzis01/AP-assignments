@@ -37,8 +37,10 @@ public class XMLSerializer {
       for (Object o : arr) {
          
          IntrospectedClass c = classLookup(o);
-         if (!c.labeled)
+         if (!c.labeled){
+            xmlResult.add("<notXMLable />");
             continue;
+         }
          List<String> serializedObj = new ArrayList<>();
          serializedObj.add("<" + c.name + ">");
 
