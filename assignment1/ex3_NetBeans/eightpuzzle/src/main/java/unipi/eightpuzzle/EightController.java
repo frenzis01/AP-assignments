@@ -18,21 +18,31 @@ import javax.swing.JLabel;
 public class EightController extends JLabel implements VetoableChangeListener {
     
     int hole = 0;
-    List<Integer> adj = new ArrayList<Integer>();
+    List<Integer> adj = new ArrayList<>();
     
     public EightController (int hole){
         validatePosition(hole);
         this.hole = hole;
     }
+    
+    public EightController (){
+        super();
+        this.setText("START");
+    }
 
     @Override
     public void vetoableChange(PropertyChangeEvent pce) throws PropertyVetoException {
-        int tileToBeMoved = (int) pce.getNewValue();
-        if (false == this.adj.contains(tileToBeMoved))
+        if ("label" != pce.getPropertyName())
+            return;
+                    
+        int tileToBeMoved = (int) pce.getOldValue();
+        if (false == this.adj.contains(tileToBeMoved)){
+            this.setText("KO");
             throw new UnsupportedOperationException("Tile is not adjacent to hole");
+        }
         // If tile can be moved, update hole
-        this.hole = tileToBeMoved;
-        this.adj = getAdjacent(hole);
+        this.setHole(tileToBeMoved);
+        this.setText("OK");
         
     }
     
@@ -52,7 +62,7 @@ public class EightController extends JLabel implements VetoableChangeListener {
     private static List<Integer> getAdjacent (int pos) {
         validatePosition(pos);
         //There are at most 4 adjacent tiles
-        List<Integer> adj = new ArrayList<Integer>(4); 
+        List<Integer> adj = new ArrayList<>(4); 
         
         
         // Upper tile
@@ -72,5 +82,12 @@ public class EightController extends JLabel implements VetoableChangeListener {
             adj.add(pos - 1);
         
         return adj;
+    }
+    
+    public void setHole(int pos){
+//        System.out.println(pos);
+        validatePosition(pos);
+        this.hole = pos;
+        this.adj = getAdjacent(hole);
     }
 }
