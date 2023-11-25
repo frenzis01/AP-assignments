@@ -36,8 +36,8 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
     @Override
     public void vetoableChange(PropertyChangeEvent pce) throws PropertyVetoException {
 //        System.out.println("Event : " + pce.getPropertyName() +" | Hole : " + this.hole);
-        System.out.println("Controller invoked");
-        if ("label".equals(pce.getPropertyName()))
+//        System.out.println("Controller invoked " + pce.getPropertyName());
+        if (!"label".equals(pce.getPropertyName()))
             return;
                     
         // int tileToBeMoved = (int) pce.getOldValue();
@@ -47,7 +47,7 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         if (false == this.adj.contains(tileToBeMoved)){
             this.setText("KO");
             System.out.println("ILLEGAL OP");
-            throw new UnsupportedOperationException("Tile is not adjacent to hole");
+            throw new PropertyVetoException("Tile is not adjacent to hole",pce);
         }
         // If tile can be moved, update hole
         this.setHole(tileToBeMoved);
@@ -98,6 +98,7 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         validatePosition(pos);
         this.hole = pos;
         this.adj = getAdjacent(hole);
+            System.out.println("Hole := " +  this.hole);
     }
 
     @Override
@@ -106,7 +107,7 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         if(source.getActionCommand().equals("restart")){
             // get permutation from restartButton's properties
             int[] permutation = (int[]) source.getClientProperty("permutation");
-            this.setHole(indexOf(permutation,9)+1);
+            this.setHole(1+indexOf(permutation,9));
         }
     }
     

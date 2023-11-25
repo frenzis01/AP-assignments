@@ -5,12 +5,14 @@
 package unipi.eightpuzzle;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -37,6 +39,8 @@ public class EightBoard extends javax.swing.JFrame {
         this.tiles[7] = eightTile8;
         this.tiles[8] = eightTile9;
         restart.setActionCommand("restart");
+        
+        // Initialize the first permutation
         int[] permutation = generatePermutation(1,9);
         restart.putClientProperty("permutation",permutation);
 //        initBoard(permutation);
@@ -46,6 +50,7 @@ public class EightBoard extends javax.swing.JFrame {
         // and for the 'swap'event of other tiles
         for (EightTile t : tiles) {
             restart.addActionListener(t);
+            t.addVetoableChangeListener(eightController1);
         }  
         restart.doClick();
         
@@ -53,14 +58,32 @@ public class EightBoard extends javax.swing.JFrame {
             t.setActionCommand("swap");
             t.putClientProperty("clickedTile",t.getMyLabel());
             t.addActionListener((ActionEvent ae) -> {
-                int oldLabel = t.getMyLabel();
-                if (1 == t.moveTile()){ //tile has been successfully moved
-                    t.setActionCommand("swap");
+                System.out.println(ae.getActionCommand());
+                if ("swap".equals(ae.getActionCommand())) {
+                    int oldLabel = t.getMyLabel();
+                    if (1 == t.moveTile()) { //tile has been successfully moved
+                        t.setActionCommand("swapOK");
 //                    t.putClientProperty("clickedTile",oldLabel);
-                    System.out.println(t.getPosition() + ":" + 9 + " sent " + t.getClientProperty("clickedTile"));
+                        System.out.println(t.getPosition() + ":" + 9 + " sent " + t.getClientProperty("clickedTile"));
 //                    t.putClientProperty("clickedTile",9);
+//                    t.firePropertyChange("label", oldLabel, 9);
+//                    t.fireActionPerformed((ActionEvent ae2) -> {
+//                        ActionEvent swapOK = new ActionEvent(t,oldLabel,"swapOK");
+//                        t.actionPerformed(swapOK);
+//                        t.setActionCommand("swap");      
+//                        t.fireActionPerformed(swapOK);
+//                    });
+                        t.doClick();
+                    }
                 }
+                if ("swapOK".equals(ae.getActionCommand())) {
+                    SwingUtilities.invokeLater(() -> {
+                        t.setActionCommand("swap");
+                    });
+                }
+
             });
+            
             Stream  .of(tiles)
                     .filter(tile -> tile.getPosition() != t.getPosition())
                     .forEach(tile -> tile.addActionListener(t));
@@ -79,15 +102,15 @@ public class EightBoard extends javax.swing.JFrame {
     private void initComponents() {
 
         jInternalFrame1 = new javax.swing.JInternalFrame();
-        eightTile1 = new unipi.eightpuzzle.EightTile(1,1,eightController1);
-        eightTile2 = new unipi.eightpuzzle.EightTile(2,2,eightController1);
-        eightTile3 = new unipi.eightpuzzle.EightTile(3,3,eightController1);
-        eightTile4 = new unipi.eightpuzzle.EightTile(4,4,eightController1);
-        eightTile5 = new unipi.eightpuzzle.EightTile(5,5,eightController1);
-        eightTile6 = new unipi.eightpuzzle.EightTile(6,6,eightController1);
-        eightTile7 = new unipi.eightpuzzle.EightTile(7,7,eightController1);
-        eightTile8 = new unipi.eightpuzzle.EightTile(8,8,eightController1);
-        eightTile9 = new unipi.eightpuzzle.EightTile(9,9,eightController1);
+        eightTile1 = new unipi.eightpuzzle.EightTile(1,1);
+        eightTile2 = new unipi.eightpuzzle.EightTile(2,2);
+        eightTile3 = new unipi.eightpuzzle.EightTile(3,3);
+        eightTile4 = new unipi.eightpuzzle.EightTile(4,4);
+        eightTile5 = new unipi.eightpuzzle.EightTile(5,5);
+        eightTile6 = new unipi.eightpuzzle.EightTile(6,6);
+        eightTile7 = new unipi.eightpuzzle.EightTile(7,7);
+        eightTile8 = new unipi.eightpuzzle.EightTile(8,8);
+        eightTile9 = new unipi.eightpuzzle.EightTile(9,9);
         jInternalFrame2 = new javax.swing.JInternalFrame();
         eightController1 = new unipi.eightpuzzle.EightController();
         restart = new javax.swing.JButton();
@@ -167,12 +190,23 @@ public class EightBoard extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void restartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restartActionPerformed
+        System.out.println("-----------RESTARTED----------");
+        
+        // This permutation will be adopted by the next restart click
+        // Not the current one
+        
         int[] permutation = generatePermutation(1,9);
 //        Stream.of(permutation).forEach(System.out::println);
-        eightController1.setHole(1+indexOf(permutation,9));
+//        eightController1.setHole(1+indexOf(permutation,9)); // handled
         restart.setActionCommand("restart");
         // restart.putClientProperty("permutation",List.of(permutation));
         restart.putClientProperty("permutation",permutation);
+//        System.out.print("----next -> ");
+        
+//        for (int i: permutation)
+//            System.out.print(i + " ");
+//        System.out.println();
+
 
     }//GEN-LAST:event_restartActionPerformed
 
@@ -231,7 +265,7 @@ public class EightBoard extends javax.swing.JFrame {
 
         // Random permutation through list shuffling
         Collections.shuffle(numbers);
-        System.out.println("---------------------");
+//        System.out.println("---------------------");
 //        for(Integer i:numbers)
 //            System.out.println(i + (i + 1 == numbers.indexOf(i) ? " ------": ""));
         // Map to int[]

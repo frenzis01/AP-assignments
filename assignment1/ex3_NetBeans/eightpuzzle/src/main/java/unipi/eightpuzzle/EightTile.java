@@ -4,8 +4,10 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
 import java.util.List;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
@@ -16,19 +18,16 @@ import javax.swing.SwingUtilities;
 public class EightTile extends javax.swing.JButton implements ActionListener{
     private int position;
     private int label;
-    private EightController listener;
+    private VetoableChangeListener listener;
     private VetoableChangeSupport mVcs = new VetoableChangeSupport(this);
     
-    public EightTile (int position, int label, EightController listener) {
+    public EightTile (int position, int label) {
         if (!isValid(position) || !isValid(label))
             throw new IllegalArgumentException();
         this.position = position;
         this.label = label;
-        // Register listener
-       this.listener = listener;
        this.updateText();
        this.updateColor();
-       this.addVetoableChangeListener(listener);
     }
     
     
@@ -69,8 +68,11 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
 //            int[] permutation = ((List<Integer>) button.getClientProperty("permutation")).stream().mapToInt(Integer::intValue).toArray();
             this.restart(permutation);
         }
+//        
+//        if (button.getActionCommand().equals("swapOK"))
+//            System.out.println("Received!!!");
         
-        if(button.getActionCommand().equals("swap") && this.label == 9){
+        if(button.getActionCommand().equals("swapOK") && this.label == 9){
             EightTile source = (EightTile) button;
             int newLabel = (int) source.getClientProperty("clickedTile");
             System.out.println(position + ":" + label + " received " + newLabel + " by " + source.getPosition());
@@ -109,6 +111,16 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
         else{
             this.setText(String.valueOf(this.label));
         }
+    }
+    
+    @Override
+    public void addVetoableChangeListener(VetoableChangeListener l){
+        mVcs.addVetoableChangeListener(l);
+    }
+    
+    @Override
+    public void removeVetoableChangeListener(VetoableChangeListener l){
+        mVcs.removeVetoableChangeListener(l);
     }
     
     public int getPosition (){return this.position;}
