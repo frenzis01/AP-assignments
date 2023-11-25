@@ -73,9 +73,6 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         
         int pos = mapPosToGridInverse(p);
         
-        System.out.print("Hole -> " + pos + " ");
-        
-        
         // Upper tile
         if (pos + 3 <= 9)
             adj.add(pos + 3);
@@ -91,8 +88,6 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         // Prev tile
         if ((pos - 1) % 3 != 0) // pos not in leftmost column
             adj.add(pos - 1);
-        
-        System.out.println(adj.toString());
         
         return adj.stream().map(EightController::mapPosToGrid).toList();
     }
