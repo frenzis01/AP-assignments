@@ -63,14 +63,9 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
         //TODO: add the control to distinguish between the restart and flip button. 
         JButton button = (JButton) ae.getSource();
         if(button.getActionCommand().equals("restart")){
-            // get permutation from restartButton's properties
             int[] permutation = (int[]) button.getClientProperty("permutation");
-//            int[] permutation = ((List<Integer>) button.getClientProperty("permutation")).stream().mapToInt(Integer::intValue).toArray();
             this.restart(permutation);
         }
-//        
-//        if (button.getActionCommand().equals("swapOK"))
-//            System.out.println("Received!!!");
         
         if(button.getActionCommand().equals("swapOK") && this.label == 9){
             EightTile source = (EightTile) button;

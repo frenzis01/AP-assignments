@@ -55,30 +55,32 @@ public class EightBoard extends javax.swing.JFrame {
         restart.doClick();
         
         for (EightTile t : tiles) {
-            t.setActionCommand("swap");
+            t.setActionCommand("swapRequest");
             t.putClientProperty("clickedTile",t.getMyLabel());
             t.addActionListener((ActionEvent ae) -> {
                 System.out.println(ae.getActionCommand());
-                if ("swap".equals(ae.getActionCommand())) {
+                if ("swapRequest".equals(ae.getActionCommand())) {
                     int oldLabel = t.getMyLabel();
-                    if (1 == t.moveTile()) { //tile has been successfully moved
-                        t.setActionCommand("swapOK");
-//                    t.putClientProperty("clickedTile",oldLabel);
+                    if (1 == t.moveTile()) { 
+                        //tile has been successfully moved
                         System.out.println(t.getPosition() + ":" + 9 + " sent " + t.getClientProperty("clickedTile"));
-//                    t.putClientProperty("clickedTile",9);
-//                    t.firePropertyChange("label", oldLabel, 9);
-//                    t.fireActionPerformed((ActionEvent ae2) -> {
-//                        ActionEvent swapOK = new ActionEvent(t,oldLabel,"swapOK");
-//                        t.actionPerformed(swapOK);
-//                        t.setActionCommand("swap");      
-//                        t.fireActionPerformed(swapOK);
-//                    });
+                        
+                        // We will fire a second event labeled "swapOK"
+                        // Every listener will know that the tile swap wa successful
+                        t.setActionCommand("swapOK");
+                        // Fire event to all listeners
                         t.doClick();
                     }
                 }
                 if ("swapOK".equals(ae.getActionCommand())) {
+                    // Revert back to previous actionCommand
+                    
+                    // invokeLater is needed to ensure sequentiality
+                    //    i.e. swapRequest -> swapOK
+                    // Otherwise some Tile might lose the swapOK sent
+                    // by t.doClick()
                     SwingUtilities.invokeLater(() -> {
-                        t.setActionCommand("swap");
+                        t.setActionCommand("swapRequest");
                     });
                 }
 

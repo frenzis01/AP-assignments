@@ -35,8 +35,6 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
 
     @Override
     public void vetoableChange(PropertyChangeEvent pce) throws PropertyVetoException {
-//        System.out.println("Event : " + pce.getPropertyName() +" | Hole : " + this.hole);
-//        System.out.println("Controller invoked " + pce.getPropertyName());
         if (!"label".equals(pce.getPropertyName()))
             return;
                     
