@@ -28,34 +28,9 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
        this.listener = listener;
        this.updateText();
        this.updateColor();
-       this.addVetoableChangeListener(this.listener);
+       this.addVetoableChangeListener(listener);
     }
     
-    public EightTile(){
-        super();
-    }
-    
-    private static boolean isValid(int pos) {
-        return pos > 0 && pos <= 9;
-    }
-    
-    public void updateColor (){
-        System.out.println(position + " : " +label );
-        if (label == 9)
-            this.setBackground(Color.DARK_GRAY);
-        else if (position == label)
-            this.setBackground(Color.GREEN);
-        else
-            this.setBackground(Color.YELLOW);
-    }
-    
-    public void updateText (){
-        if (this.label == 9)
-            this.setText(" ");
-        else{
-            this.setText(String.valueOf(this.label));
-        }
-    }
     
     public int moveTile () {
         try{
@@ -97,7 +72,8 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
         
         if(button.getActionCommand().equals("swap") && this.label == 9){
             EightTile source = (EightTile) button;
-            int newLabel = (int) button.getClientProperty("clickedTile");
+            int newLabel = (int) source.getClientProperty("clickedTile");
+            System.out.println(position + ":" + label + " received " + newLabel + " by " + source.getPosition());
             this.updateLabel(newLabel);
             this.putClientProperty("clickedTile",newLabel);
         }
@@ -108,8 +84,33 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
         this.updateColor();
         this.updateText();
     }
+
+    public EightTile(){
+        super();
+    }
+    
+    private static boolean isValid(int pos) {
+        return pos > 0 && pos <= 9;
+    }
+    
+    public void updateColor (){
+        System.out.println(position + " : " +label );
+        if (label == 9)
+            this.setBackground(Color.DARK_GRAY);
+        else if (position == label)
+            this.setBackground(Color.GREEN);
+        else
+            this.setBackground(Color.YELLOW);
+    }
+    
+    public void updateText (){
+        if (this.label == 9)
+            this.setText(" ");
+        else{
+            this.setText(String.valueOf(this.label));
+        }
+    }
     
     public int getPosition (){return this.position;}
     public int getMyLabel (){return this.label;}
-
 }

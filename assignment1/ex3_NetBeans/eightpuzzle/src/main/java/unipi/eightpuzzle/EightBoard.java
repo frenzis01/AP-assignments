@@ -39,26 +39,33 @@ public class EightBoard extends javax.swing.JFrame {
         restart.setActionCommand("restart");
         int[] permutation = generatePermutation(1,9);
         restart.putClientProperty("permutation",permutation);
-        initBoard(permutation);
-        
+//        initBoard(permutation);
+        restart.addActionListener(eightController1);
+
         // Tiles must listen for 'restart' event
         // and for the 'swap'event of other tiles
         for (EightTile t : tiles) {
             restart.addActionListener(t);
+        }  
+        restart.doClick();
+        
+        for (EightTile t : tiles) {
             t.setActionCommand("swap");
             t.putClientProperty("clickedTile",t.getMyLabel());
             t.addActionListener((ActionEvent ae) -> {
                 int oldLabel = t.getMyLabel();
                 if (1 == t.moveTile()){ //tile has been successfully moved
                     t.setActionCommand("swap");
-                    t.putClientProperty("clickedTile",oldLabel);
+//                    t.putClientProperty("clickedTile",oldLabel);
+                    System.out.println(t.getPosition() + ":" + 9 + " sent " + t.getClientProperty("clickedTile"));
+//                    t.putClientProperty("clickedTile",9);
                 }
             });
             Stream  .of(tiles)
                     .filter(tile -> tile.getPosition() != t.getPosition())
                     .forEach(tile -> tile.addActionListener(t));
             
-        }  
+        }
         
     }
 
@@ -225,8 +232,8 @@ public class EightBoard extends javax.swing.JFrame {
         // Random permutation through list shuffling
         Collections.shuffle(numbers);
         System.out.println("---------------------");
-        for(Integer i:numbers)
-            System.out.println(i + (i + 1 == numbers.indexOf(i) ? " ------": ""));
+//        for(Integer i:numbers)
+//            System.out.println(i + (i + 1 == numbers.indexOf(i) ? " ------": ""));
         // Map to int[]
         return numbers.stream().mapToInt(Integer::intValue).toArray();
     }
@@ -240,6 +247,7 @@ public class EightBoard extends javax.swing.JFrame {
 //        int[] permutation = generatePermutation(1,9);
         for(EightTile t: this.tiles)
             t.restart(permutation);
+        eightController1.setHole(1+indexOf(permutation,9));
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

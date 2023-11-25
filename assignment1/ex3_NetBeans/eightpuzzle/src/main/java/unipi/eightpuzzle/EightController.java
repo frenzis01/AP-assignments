@@ -4,21 +4,24 @@
  */
 package unipi.eightpuzzle;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 
 /**
  *
  * @author Francesco Lorenzoni
  */
-public class EightController extends JLabel implements VetoableChangeListener {
+public class EightController extends JLabel implements VetoableChangeListener,ActionListener{
     
-    int hole = 0;
-    List<Integer> adj = new ArrayList<>();
+    private int hole = 0;
+    private List<Integer> adj = new ArrayList<>();
     
     public EightController (int hole){
         validatePosition(hole);
@@ -32,14 +35,18 @@ public class EightController extends JLabel implements VetoableChangeListener {
 
     @Override
     public void vetoableChange(PropertyChangeEvent pce) throws PropertyVetoException {
-        if ("label" != pce.getPropertyName())
+//        System.out.println("Event : " + pce.getPropertyName() +" | Hole : " + this.hole);
+        System.out.println("Controller invoked");
+        if ("label".equals(pce.getPropertyName()))
             return;
                     
         // int tileToBeMoved = (int) pce.getOldValue();
         // Here we work with positions, not labels
         int tileToBeMoved = ((EightTile)pce.getSource()).getPosition();
+        System.out.println("Clicked : " + tileToBeMoved + " | Hole : " + this.hole);
         if (false == this.adj.contains(tileToBeMoved)){
             this.setText("KO");
+            System.out.println("ILLEGAL OP");
             throw new UnsupportedOperationException("Tile is not adjacent to hole");
         }
         // If tile can be moved, update hole
@@ -91,5 +98,23 @@ public class EightController extends JLabel implements VetoableChangeListener {
         validatePosition(pos);
         this.hole = pos;
         this.adj = getAdjacent(hole);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        JButton source = (JButton) ae.getSource();
+        if(source.getActionCommand().equals("restart")){
+            // get permutation from restartButton's properties
+            int[] permutation = (int[]) source.getClientProperty("permutation");
+            this.setHole(indexOf(permutation,9)+1);
+        }
+    }
+    
+    public static int indexOf (int arr[], int v){
+        for(int i = 0; i<arr.length;i++){
+            if (arr[i] == v)
+                return i;
+        }
+        return -1;
     }
 }
