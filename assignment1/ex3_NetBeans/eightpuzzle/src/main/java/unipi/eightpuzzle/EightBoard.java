@@ -42,8 +42,22 @@ public class EightBoard extends javax.swing.JFrame {
         initBoard(permutation);
         
         // Tiles must listen for 'restart' event
+        // and for the 'swap'event of other tiles
         for (EightTile t : tiles) {
             restart.addActionListener(t);
+            t.setActionCommand("swap");
+            t.putClientProperty("clickedTile",t.getMyLabel());
+            t.addActionListener((ActionEvent ae) -> {
+                int oldLabel = t.getMyLabel();
+                if (1 == t.moveTile()){ //tile has been successfully moved
+                    t.setActionCommand("swap");
+                    t.putClientProperty("clickedTile",oldLabel);
+                }
+            });
+            Stream  .of(tiles)
+                    .filter(tile -> tile.getPosition() != t.getPosition())
+                    .forEach(tile -> tile.addActionListener(t));
+            
         }  
         
     }

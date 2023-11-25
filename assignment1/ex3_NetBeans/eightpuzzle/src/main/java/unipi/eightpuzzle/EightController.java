@@ -35,7 +35,9 @@ public class EightController extends JLabel implements VetoableChangeListener {
         if ("label" != pce.getPropertyName())
             return;
                     
-        int tileToBeMoved = (int) pce.getOldValue();
+        // int tileToBeMoved = (int) pce.getOldValue();
+        // Here we work with positions, not labels
+        int tileToBeMoved = ((EightTile)pce.getSource()).getPosition();
         if (false == this.adj.contains(tileToBeMoved)){
             this.setText("KO");
             throw new UnsupportedOperationException("Tile is not adjacent to hole");

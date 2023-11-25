@@ -57,12 +57,11 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
         }
     }
     
-    public void moveTile () {
+    public int moveTile () {
         try{
             this.mVcs.fireVetoableChange("label", label, 9);
-            this.label=9;
-            updateColor();
-            updateText();
+            updateLabel(9);
+            return 1;
         }
         catch(PropertyVetoException e){
             this.setBackground(Color.RED);
@@ -75,15 +74,14 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
                 updateColor();
             });
             System.out.println("Cannot move tile");
+            return 0;
         }
         
     }
 
     public void restart(int[] labelPermutation) {
         int newLabel = labelPermutation[this.position-1];
-        this.label = newLabel;
-        this.updateColor();
-        this.updateText();
+        updateLabel(newLabel);
     }
     
     @Override
@@ -96,9 +94,22 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
 //            int[] permutation = ((List<Integer>) button.getClientProperty("permutation")).stream().mapToInt(Integer::intValue).toArray();
             this.restart(permutation);
         }
+        
+        if(button.getActionCommand().equals("swap") && this.label == 9){
+            EightTile source = (EightTile) button;
+            int newLabel = (int) button.getClientProperty("clickedTile");
+            this.updateLabel(newLabel);
+            this.putClientProperty("clickedTile",newLabel);
+        }
     }
     
-    public int getPosition (){return position;}
-    public int getMyLabel (){return label;}
+    private void updateLabel(int newLabel){
+        this.label = newLabel;
+        this.updateColor();
+        this.updateText();
+    }
+    
+    public int getPosition (){return this.position;}
+    public int getMyLabel (){return this.label;}
 
 }
