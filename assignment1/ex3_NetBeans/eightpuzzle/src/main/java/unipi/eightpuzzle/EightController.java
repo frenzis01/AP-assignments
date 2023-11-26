@@ -152,6 +152,7 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
             // get permutation from restartButton's properties
             int[] permutation = (int[]) source.getClientProperty("permutation");
             this.setHole(1+indexOf(permutation,9));
+            this.setText("START");
         }
     }
     

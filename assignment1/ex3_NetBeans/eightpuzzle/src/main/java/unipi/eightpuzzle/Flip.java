@@ -73,7 +73,6 @@ public class Flip extends JButton implements ActionListener {
     
     @Override
     public void actionPerformed(ActionEvent ae) {
-        //TODO: add the control to distinguish between the restart and flip button. 
         JButton source = (JButton) ae.getSource();
         if("restart".equals(source.getActionCommand())){
             int[] permutation = (int[]) source.getClientProperty("permutation");

@@ -61,18 +61,12 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
     }
     
     @Override
-    public void actionPerformed(ActionEvent ae) {
-        //TODO: add the control to distinguish between the restart and flip button. 
+    public void actionPerformed(ActionEvent ae) { 
         JButton source = (JButton) ae.getSource();
         if("restart".equals(source.getActionCommand())){
             int[] permutation = (int[]) source.getClientProperty("permutation");
             this.restart(permutation);
         }
-        
-//        if("swapOK".equals(source.getActionCommand())){
-//            System.out.println("requestedLabel == " + (int)source.getClientProperty("requestedLabel"));
-//        }
-
         if("swapOK".equals(source.getActionCommand()) && (this.label == (int)source.getClientProperty("requestedLabel"))){
             int newLabel = (int) source.getClientProperty("clickedTile");
             System.out.println(position + ":" + label + " received " + newLabel + " by " + ((EightTile)source).getPosition());
@@ -80,21 +74,6 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
             this.putClientProperty("clickedTile",newLabel);
             
         }
-        
-//        if ("flip".equals(button.getActionCommand())) {
-//            // Left tile takes the right tile's value
-//            if (this.position == 1) {
-//                int newLabel = (int) button.getClientProperty("rightTile");
-//                this.updateLabel(newLabel);
-//                this.putClientProperty("clickedTile", newLabel);
-//            }
-//            // Right tile takes the left tile's value
-//            if (this.position == 3) {
-//                int newLabel = (int) button.getClientProperty("leftTile");
-//                this.updateLabel(newLabel);
-//                this.putClientProperty("clickedTile", newLabel);
-//            }
-//        }
     }
     
     private void updateLabel(int newLabel){
