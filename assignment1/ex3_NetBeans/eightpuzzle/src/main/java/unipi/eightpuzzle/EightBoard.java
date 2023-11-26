@@ -38,6 +38,20 @@ public class EightBoard extends javax.swing.JFrame {
         this.tiles[6] = eightTile7;
         this.tiles[7] = eightTile8;
         this.tiles[8] = eightTile9;
+        
+        flip1.addVetoableChangeListener(eightController1);
+        flip1.setActionCommand("flip");
+        
+        flip1.addActionListener((ActionEvent ae) -> {
+            if (flip1.flipTiles()){
+                flip1.putClientProperty("leftTile", eightTile1.getMyLabel());
+                flip1.putClientProperty("rightTile", eightTile3.getMyLabel());
+                // Invoke actionPerformed on tile1 and tile3
+                eightTile1.actionPerformed(ae);
+                eightTile3.actionPerformed(ae);
+            }
+        });
+        
         restart.setActionCommand("restart");
         
         // Initialize the first permutation
@@ -45,6 +59,7 @@ public class EightBoard extends javax.swing.JFrame {
         restart.putClientProperty("permutation",permutation);
 //        initBoard(permutation);
         restart.addActionListener(eightController1);
+        
 
         // Tiles must listen for 'restart' event
         // and for the 'swap'event of other tiles
@@ -61,7 +76,7 @@ public class EightBoard extends javax.swing.JFrame {
                 System.out.println(ae.getActionCommand());
                 if ("swapRequest".equals(ae.getActionCommand())) {
                     int oldLabel = t.getMyLabel();
-                    if (1 == t.moveTile()) { 
+                    if (1 == t.moveTile(9)) { 
                         //tile has been successfully moved
                         System.out.println(t.getPosition() + ":" + 9 + " sent " + t.getClientProperty("clickedTile"));
                         
@@ -153,7 +168,7 @@ public class EightBoard extends javax.swing.JFrame {
         jInternalFrame2.setVisible(true);
         jInternalFrame2.getContentPane().setLayout(new java.awt.GridLayout(1, 3));
 
-        eightController1.setText("ST");
+        eightController1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jInternalFrame2.getContentPane().add(eightController1);
 
         restart.setText("RESTART");
@@ -164,7 +179,7 @@ public class EightBoard extends javax.swing.JFrame {
         });
         jInternalFrame2.getContentPane().add(restart);
 
-        flip1.setText("flip1");
+        flip1.setText("FLIP");
         jInternalFrame2.getContentPane().add(flip1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

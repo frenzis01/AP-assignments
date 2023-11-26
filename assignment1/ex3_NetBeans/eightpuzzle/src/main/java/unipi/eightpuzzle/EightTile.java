@@ -31,10 +31,11 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
     }
     
     
-    public int moveTile () {
+    public int moveTile (int newLabel) {
         try{
-            this.mVcs.fireVetoableChange("label", label, 9);
-            updateLabel(9);
+//            String propertyName = newLabel == 9 ? "labelSwap" : "flip";
+            this.mVcs.fireVetoableChange("labelSwap", label, newLabel);
+            updateLabel(newLabel);
             return 1;
         }
         catch(PropertyVetoException e){
@@ -62,17 +63,32 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
     public void actionPerformed(ActionEvent ae) {
         //TODO: add the control to distinguish between the restart and flip button. 
         JButton button = (JButton) ae.getSource();
-        if(button.getActionCommand().equals("restart")){
+        if("restart".equals(button.getActionCommand())){
             int[] permutation = (int[]) button.getClientProperty("permutation");
             this.restart(permutation);
         }
         
-        if(button.getActionCommand().equals("swapOK") && this.label == 9){
+        if("swapOK".equals(button.getActionCommand()) && this.label == 9){
             EightTile source = (EightTile) button;
             int newLabel = (int) source.getClientProperty("clickedTile");
             System.out.println(position + ":" + label + " received " + newLabel + " by " + source.getPosition());
             this.updateLabel(newLabel);
             this.putClientProperty("clickedTile",newLabel);
+        }
+        
+        if ("flip".equals(button.getActionCommand())) {
+            // Left tile takes the right tile's value
+            if (this.position == 1) {
+                int newLabel = (int) button.getClientProperty("rightTile");
+                this.updateLabel(newLabel);
+                this.putClientProperty("clickedTile", newLabel);
+            }
+            // Right tile takes the left tile's value
+            if (this.position == 3) {
+                int newLabel = (int) button.getClientProperty("leftTile");
+                this.updateLabel(newLabel);
+                this.putClientProperty("clickedTile", newLabel);
+            }
         }
     }
     

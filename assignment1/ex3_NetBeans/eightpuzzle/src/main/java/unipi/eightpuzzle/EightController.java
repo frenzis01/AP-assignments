@@ -35,10 +35,7 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
 
     @Override
     public void vetoableChange(PropertyChangeEvent pce) throws PropertyVetoException {
-        if (!"label".equals(pce.getPropertyName()))
-            return;
-                    
-        // int tileToBeMoved = (int) pce.getOldValue();
+        if ("labelSwap".equals(pce.getPropertyName())){
         // Here we work with positions, not labels
         int tileToBeMoved = ((EightTile)pce.getSource()).getPosition();
         System.out.println("Clicked : " + tileToBeMoved + " | Hole : " + this.hole);
@@ -51,6 +48,14 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         this.setHole(tileToBeMoved);
         this.setText("OK");
         
+            
+        }
+//        if ("flip".equals(pce.getPropertyName())){
+//            if (this.hole != 9){
+//                throw new PropertyVetoException("Tile is not adjacent to hole",pce);
+//            }
+//            
+//        }
     }
     
     private static boolean isValid(int pos) {
@@ -134,7 +139,6 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
     
     
     public void setHole(int pos){
-//        System.out.println(pos);
         validatePosition(pos);
         this.hole = pos;
         this.adj = getAdjacent(hole);
