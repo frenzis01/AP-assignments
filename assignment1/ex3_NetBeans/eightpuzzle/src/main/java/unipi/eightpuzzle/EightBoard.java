@@ -45,6 +45,7 @@ public class EightBoard extends javax.swing.JFrame {
         flip1.addActionListener((ActionEvent ae) -> {
             if (flip1.flipTiles()){
                 eightTile1.putClientProperty("requestedLabel", flip1.getLabel1());
+                System.out.println("Setting request -> "+ flip1.getLabel1());
                 eightTile1.doClick();
             }
         });
@@ -72,7 +73,7 @@ public class EightBoard extends javax.swing.JFrame {
             t.putClientProperty("clickedTile",t.getMyLabel());
             t.putClientProperty("requestedLabel", 9); 
             t.addActionListener((ActionEvent ae) -> {
-                System.out.println(ae.getActionCommand());
+//                System.out.println(ae.getActionCommand());
                 if ("swapRequest".equals(ae.getActionCommand())) {
                     int 
                             oldLabel = t.getMyLabel(),
@@ -104,6 +105,8 @@ public class EightBoard extends javax.swing.JFrame {
                     SwingUtilities.invokeLater(() -> {
                         t.setActionCommand("swapRequest");
                         t.putClientProperty("requestedLabel", 9);
+                        t.putClientProperty("clickedTile",t.getMyLabel());
+
                     });
                 }
 

@@ -30,23 +30,24 @@ public class Flip extends JButton implements ActionListener {
             mVcs.fireVetoableChange("flip", null, null);
             // we locally swap label1 and label2 in this instance,
             // the label edit in EightTile instances will be made by theirselves
+            System.out.print("Flippables: "+ label1 + " " + label2 + "-->");
+
             int tmp = this.label1;
             this.label1 = this.label2;
             this.label2 = tmp;
+            System.out.println(label1 + " " + label2);
             return true;
         }
         catch(PropertyVetoException e){
-            var oldBG = this.getBackground();
             this.setBackground(Color.RED);
 
             // recover background SwingUtilities.invokeLater
             SwingUtilities.invokeLater(() -> {
                 try {
-                    Thread.sleep(400);
+                    Thread.sleep(250);
                 } catch (InterruptedException ex) {  }
-                
+                this.setBackground(Color.CYAN);
             });
-            this.setBackground(oldBG);
             System.out.println("Cannot flip tiles");
             return false;
         }
@@ -57,6 +58,7 @@ public class Flip extends JButton implements ActionListener {
     public Flip () {
         super();
         super.setText("FLIP");
+        this.setBackground(Color.CYAN);
     }
     
     @Override
@@ -72,9 +74,9 @@ public class Flip extends JButton implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         //TODO: add the control to distinguish between the restart and flip button. 
-        JButton button = (JButton) ae.getSource();
-        if("restart".equals(button.getActionCommand())){
-            int[] permutation = (int[]) button.getClientProperty("permutation");
+        JButton source = (JButton) ae.getSource();
+        if("restart".equals(source.getActionCommand())){
+            int[] permutation = (int[]) source.getClientProperty("permutation");
             // we assume that label in position 1 is the 1st in the permutation array
             // and that the label in position 2 is the 2nd in the permutation array
             
@@ -83,10 +85,9 @@ public class Flip extends JButton implements ActionListener {
 
         }
         
-        if("swapOK".equals(button.getActionCommand())
+        if("swapOK".equals(source.getActionCommand())
                 // the swap is a regular move, not a flip
-                && (int) button.getClientProperty("requestedLabel") == 9){
-            EightTile source = (EightTile) button;
+                && (int) source.getClientProperty("requestedLabel") == 9){
             // We can't use this since clickedTile gets modified by tiles
             // as soon as they receive the event.
             //  => we'll use another property
@@ -94,6 +95,7 @@ public class Flip extends JButton implements ActionListener {
             
             // swappedLabel became the hole
             int swappedLabel = (int) source.getClientProperty("swappedLabel");
+            System.out.println("swapped: " + swappedLabel);
             // if one of the flippable labels were either the hole or 
             // the swapped one, they must be updated
             if (this.label1 == 9)
@@ -105,9 +107,10 @@ public class Flip extends JButton implements ActionListener {
                 this.label2 = swappedLabel;
             else if (this.label2 == swappedLabel)
                 this.label2 = 9;
+            System.out.println("REGULAR SWAP - Flippables: "+ label1 + " " + label2);
+            
         }
         
-        System.out.println("Flippables: "+ label1 + " " + label2);
     }
     
     // tile1 must get the label of tile2
