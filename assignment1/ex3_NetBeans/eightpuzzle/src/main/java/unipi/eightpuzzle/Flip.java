@@ -5,6 +5,8 @@
 package unipi.eightpuzzle;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
@@ -15,13 +17,22 @@ import javax.swing.SwingUtilities;
  *
  * @author Francesco Lorenzoni
  */
-public class Flip extends JButton {
+public class Flip extends JButton implements ActionListener {
     
     private VetoableChangeSupport mVcs = new VetoableChangeSupport(this) {};
+    
+    private int
+            label1 = 1, // This init values should never be used
+            label2 = 2;
     
     public boolean flipTiles () {
         try {
             mVcs.fireVetoableChange("flip", null, null);
+            // we locally swap label1 and label2 in this instance,
+            // the label edit in EightTile instances will be made by theirselves
+            int tmp = this.label1;
+            this.label1 = this.label2;
+            this.label2 = tmp;
             return true;
         }
         catch(PropertyVetoException e){
@@ -58,4 +69,47 @@ public class Flip extends JButton {
         mVcs.removeVetoableChangeListener(l);
     }
     
+    @Override
+    public void actionPerformed(ActionEvent ae) {
+        //TODO: add the control to distinguish between the restart and flip button. 
+        JButton button = (JButton) ae.getSource();
+        if("restart".equals(button.getActionCommand())){
+            int[] permutation = (int[]) button.getClientProperty("permutation");
+            // we assume that label in position 1 is the 1st in the permutation array
+            // and that the label in position 2 is the 2nd in the permutation array
+            
+            this.label1 = permutation[0];
+            this.label2 = permutation[1];
+
+        }
+        
+        if("swapOK".equals(button.getActionCommand())
+                // the swap is a regular move, not a flip
+                && (int) button.getClientProperty("requestedLabel") == 9){
+            EightTile source = (EightTile) button;
+            // We can't use this since clickedTile gets modified by tiles
+            // as soon as they receive the event.
+            //  => we'll use another property
+            // int newLabel = (int) source.getClientProperty("clickedTile");
+            
+            // swappedLabel became the hole
+            int swappedLabel = (int) source.getClientProperty("swappedLabel");
+            // if one of the flippable labels were either the hole or 
+            // the swapped one, they must be updated
+            if (this.label1 == 9)
+                this.label1 = swappedLabel;
+            else if (this.label1 == swappedLabel)
+                this.label1 = 9;
+            
+            if (this.label2 == 9)
+                this.label2 = swappedLabel;
+            else if (this.label2 == swappedLabel)
+                this.label2 = 9;
+        }
+        
+        System.out.println("Flippables: "+ label1 + " " + label2);
+    }
+    
+    // tile1 must get the label of tile2
+    public int getLabel1 () {return this.label1;}
 }

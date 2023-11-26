@@ -31,12 +31,12 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
     }
     
     
-    public int moveTile (int newLabel) {
+    public boolean labelRequest (int newLabel) {
         try{
-//            String propertyName = newLabel == 9 ? "labelSwap" : "flip";
-            this.mVcs.fireVetoableChange("labelSwap", label, newLabel);
+            String propertyName = newLabel == 9 ? "labelSwap" : "flip";
+            this.mVcs.fireVetoableChange(propertyName, label, newLabel);
             updateLabel(newLabel);
-            return 1;
+            return true;
         }
         catch(PropertyVetoException e){
             this.setBackground(Color.RED);
@@ -49,7 +49,7 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
                 updateColor();
             });
             System.out.println("Cannot move tile");
-            return 0;
+            return false;
         }
         
     }
@@ -57,39 +57,44 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
     public void restart(int[] labelPermutation) {
         int newLabel = labelPermutation[this.position-1];
         updateLabel(newLabel);
+        this.putClientProperty("clickedTile",newLabel);
     }
     
     @Override
     public void actionPerformed(ActionEvent ae) {
         //TODO: add the control to distinguish between the restart and flip button. 
-        JButton button = (JButton) ae.getSource();
-        if("restart".equals(button.getActionCommand())){
-            int[] permutation = (int[]) button.getClientProperty("permutation");
+        JButton source = (JButton) ae.getSource();
+        if("restart".equals(source.getActionCommand())){
+            int[] permutation = (int[]) source.getClientProperty("permutation");
             this.restart(permutation);
         }
         
-        if("swapOK".equals(button.getActionCommand()) && this.label == 9){
-            EightTile source = (EightTile) button;
+//        if("swapOK".equals(source.getActionCommand())){
+//            System.out.println("requestedLabel == " + (int)source.getClientProperty("requestedLabel"));
+//        }
+
+        if("swapOK".equals(source.getActionCommand()) && (this.label == (int)source.getClientProperty("requestedLabel"))){
             int newLabel = (int) source.getClientProperty("clickedTile");
-            System.out.println(position + ":" + label + " received " + newLabel + " by " + source.getPosition());
+            System.out.println(position + ":" + label + " received " + newLabel + " by " + ((EightTile)source).getPosition());
             this.updateLabel(newLabel);
             this.putClientProperty("clickedTile",newLabel);
+            
         }
         
-        if ("flip".equals(button.getActionCommand())) {
-            // Left tile takes the right tile's value
-            if (this.position == 1) {
-                int newLabel = (int) button.getClientProperty("rightTile");
-                this.updateLabel(newLabel);
-                this.putClientProperty("clickedTile", newLabel);
-            }
-            // Right tile takes the left tile's value
-            if (this.position == 3) {
-                int newLabel = (int) button.getClientProperty("leftTile");
-                this.updateLabel(newLabel);
-                this.putClientProperty("clickedTile", newLabel);
-            }
-        }
+//        if ("flip".equals(button.getActionCommand())) {
+//            // Left tile takes the right tile's value
+//            if (this.position == 1) {
+//                int newLabel = (int) button.getClientProperty("rightTile");
+//                this.updateLabel(newLabel);
+//                this.putClientProperty("clickedTile", newLabel);
+//            }
+//            // Right tile takes the left tile's value
+//            if (this.position == 3) {
+//                int newLabel = (int) button.getClientProperty("leftTile");
+//                this.updateLabel(newLabel);
+//                this.putClientProperty("clickedTile", newLabel);
+//            }
+//        }
     }
     
     private void updateLabel(int newLabel){

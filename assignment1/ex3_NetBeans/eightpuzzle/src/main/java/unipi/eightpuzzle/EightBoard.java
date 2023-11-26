@@ -44,11 +44,8 @@ public class EightBoard extends javax.swing.JFrame {
         
         flip1.addActionListener((ActionEvent ae) -> {
             if (flip1.flipTiles()){
-                flip1.putClientProperty("leftTile", eightTile1.getMyLabel());
-                flip1.putClientProperty("rightTile", eightTile3.getMyLabel());
-                // Invoke actionPerformed on tile1 and tile3
-                eightTile1.actionPerformed(ae);
-                eightTile3.actionPerformed(ae);
+                eightTile1.putClientProperty("requestedLabel", flip1.getLabel1());
+                eightTile1.doClick();
             }
         });
         
@@ -59,6 +56,7 @@ public class EightBoard extends javax.swing.JFrame {
         restart.putClientProperty("permutation",permutation);
 //        initBoard(permutation);
         restart.addActionListener(eightController1);
+        restart.addActionListener(flip1);
         
 
         // Tiles must listen for 'restart' event
@@ -72,22 +70,31 @@ public class EightBoard extends javax.swing.JFrame {
         for (EightTile t : tiles) {
             t.setActionCommand("swapRequest");
             t.putClientProperty("clickedTile",t.getMyLabel());
+            t.putClientProperty("requestedLabel", 9); 
             t.addActionListener((ActionEvent ae) -> {
                 System.out.println(ae.getActionCommand());
                 if ("swapRequest".equals(ae.getActionCommand())) {
-                    int oldLabel = t.getMyLabel();
-                    if (1 == t.moveTile(9)) { 
+                    int 
+                            oldLabel = t.getMyLabel(),
+                            requestedLabel = (int) t.getClientProperty("requestedLabel");
+
+                    // This is always 9 unless t == eightTile1 and flip has been clicked
+                    if (t.labelRequest(requestedLabel)) { 
                         //tile has been successfully moved
-                        System.out.println(t.getPosition() + ":" + 9 + " sent " + t.getClientProperty("clickedTile"));
+                        System.out.println(t.getPosition() + ":" + requestedLabel + " sent " + t.getClientProperty("clickedTile"));
                         
                         // We will fire a second event labeled "swapOK"
                         // Every listener will know that the tile swap wa successful
                         t.setActionCommand("swapOK");
+                        // This is needed by Flip button
+                        t.putClientProperty("swappedLabel", oldLabel);
                         // Fire event to all listeners
                         t.doClick();
                     }
                 }
-                if ("swapOK".equals(ae.getActionCommand())) {
+                if ("swapOK".equals(ae.getActionCommand()) ){
+//                        && 
+//                        ((EightTile)ae.getSource()).getPosition() == t.getPosition()) {
                     // Revert back to previous actionCommand
                     
                     // invokeLater is needed to ensure sequentiality
@@ -96,6 +103,7 @@ public class EightBoard extends javax.swing.JFrame {
                     // by t.doClick()
                     SwingUtilities.invokeLater(() -> {
                         t.setActionCommand("swapRequest");
+                        t.putClientProperty("requestedLabel", 9);
                     });
                 }
 
@@ -104,7 +112,7 @@ public class EightBoard extends javax.swing.JFrame {
             Stream  .of(tiles)
                     .filter(tile -> tile.getPosition() != t.getPosition())
                     .forEach(tile -> tile.addActionListener(t));
-            
+            t.addActionListener(flip1);
         }
         
     }

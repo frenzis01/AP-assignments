@@ -35,27 +35,26 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
 
     @Override
     public void vetoableChange(PropertyChangeEvent pce) throws PropertyVetoException {
-        if ("labelSwap".equals(pce.getPropertyName())){
-        // Here we work with positions, not labels
-        int tileToBeMoved = ((EightTile)pce.getSource()).getPosition();
-        System.out.println("Clicked : " + tileToBeMoved + " | Hole : " + this.hole);
-        if (false == this.adj.contains(tileToBeMoved)){
-            this.setText("KO");
-            System.out.println("ILLEGAL OP");
-            throw new PropertyVetoException("Tile is not adjacent to hole",pce);
+        if ("labelSwap".equals(pce.getPropertyName())) {
+            // Here we work with positions, not labels
+            int tileToBeMoved = ((EightTile) pce.getSource()).getPosition();
+            System.out.println("Clicked : " + tileToBeMoved + " | Hole : " + this.hole);
+            if (false == this.adj.contains(tileToBeMoved)) {
+                this.setText("KO");
+                System.out.println("ILLEGAL OP");
+                throw new PropertyVetoException("Tile is not adjacent to hole", pce);
+            }
+            // If tile can be moved, update hole
+            this.setHole(tileToBeMoved);
+            this.setText("OK");
+
         }
-        // If tile can be moved, update hole
-        this.setHole(tileToBeMoved);
-        this.setText("OK");
-        
+        if ("flip".equals(pce.getPropertyName())){
+            if (this.hole != 9){
+                throw new PropertyVetoException("Tile is not adjacent to hole",pce);
+            }
             
         }
-//        if ("flip".equals(pce.getPropertyName())){
-//            if (this.hole != 9){
-//                throw new PropertyVetoException("Tile is not adjacent to hole",pce);
-//            }
-//            
-//        }
     }
     
     private static boolean isValid(int pos) {
