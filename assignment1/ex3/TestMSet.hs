@@ -3,12 +3,24 @@ import MultiSet
 import Data.Char (toLower, isAlpha)
 import Data.List (sort)
 
+-- | Computes the ciao of a single string
+-- first maps every char to lowercase,
+-- then sorts them
+-- 
+-- @param str string to compute the ciao
+-- @returns ciao of str
 ciao str = sort $ map toLower str
 
+-- Computes the ciao of every word inside a text file,
+-- assuming that the words are newline-separated,
+-- and then returns a MultiSet in containing the ciaos
+-- 
+-- @param path file to be read containing newline separated words
+-- @returns MultiSet of ciao of words inside a read file
+readMSet :: FilePath -> IO (MSet [Char])
 readMSet path = do
       words <- fmap lines (readFile path)
       let ciaos = map ciao words
-      -- print $ take 10 ciaos --TODO remove
       return $ addList empty ciaos
 
 -- Define a function writeMSet that given a multiset and a file name, writes in the file, one
@@ -24,19 +36,19 @@ main = do
    m3 <- readMSet "../aux_files/anagram-s2.txt"
    m4 <- readMSet "../aux_files/margana2.txt"
 
-   -- Multisets m1 and m4 are not equal, 
-   -- but they have the same elements;
+   -- Test that:
+   --    Multisets m1 and m4 are not equal, 
+   --    but they have the same elements;
    print $ "m1 == m4 :" ++ show (m1 == m4)
    print $ "elems m1 == elems m4 :" ++ show (elems m1 == elems m4)
 
-   -- Multiset m1 is equal to the union 
-   -- of multisets m2 and m3;
+   -- Test that:
+   --    Multiset m1 is equal to the union 
+   --    of multisets m2 and m3;
    let m23 = m2 `union` m3
    print $ "m1 == union m2 m3 :" ++ show (m1 == union m2 m3)
-   -- print $ "diff m1 (union m2 m3) :" ++ show (diff m1 m23)
-   -- print $ "diff m1 (union m2 m3) :" ++ show (diff' m1 m23)
 
-
-   writeMSet m1 "./output/m1.txt"
-   writeMSet m2 "./output/m2.txt"
-   writeMSet m3 "./output/m3.txt"
+   -- Optional debug write
+   --    writeMSet m1 "./output/m1.txt"
+   --    writeMSet m2 "./output/m2.txt"
+   --    writeMSet m3 "./output/m3.txt"

@@ -2,31 +2,42 @@
 {-# HLINT ignore "Use newtype instead of data" #-}
 {-# HLINT ignore "Replace case with fromMaybe" #-}
 {-# LANGUAGE FlexibleInstances #-}
+-- TODO can this directives be omittted
 
 module MultiSet where
 
 data MSet a = MS [(a,Int)] deriving (Show)
-
--- instance Show a => Show (MSet a) where
---   show (MS xs) = "MS " ++ show xs
 
 instance Eq a => Eq (MSet a) where
    (==) :: Eq a => MSet a -> MSet a -> Bool
    (MS a) == (MS b) =   all (\(x,m) -> occs (MS b) x == m) a &&
                         all (\(x,m) -> occs (MS a) x == m) b
 
-diff (MS a) (MS b) = filter (\(x,m) -> occs (MS b) x /= m) a
-                  ++ filter (\(x,m) -> occs (MS a) x /= m) b
+-- diff was not requested by the assignment
+-- it was used only for debugging purposes
+-- 
+-- | Given two MSet A,B finds all differences in the sets
+--    @param A set to be compared
+--    @param B set to be compared
+--    @returns all keys which have a 
+--             different multiplicity in A and B in a format like
+--             [(key,A[key],B[key])] 
 
-diff' (MS a) (MS b) =   [(x,m,mb) | (x,m) <- a, let mb = occs (MS b) x, m /= mb]
+diff :: Eq a => MSet a -> MSet a -> [(a, Int, Int)]
+diff (MS a) (MS b) =   [(x,m,mb) | (x,m) <- a, let mb = occs (MS b) x, m /= mb]
                      ++ [(x,0,mb) | (x,mb) <- filter (\(x,m) -> x `notElem` map fst a) b]
 
 -- Notice that foldr is applied only to the keys of the multiset, since
--- it is defined as `Mset a` 
+-- it is defined as `Mset a`. No operation on the multiplicities is performed
 instance Foldable MSet where
    foldr f z (MS []) = z
    foldr f z (MS ((x, m):xs)) = f x (foldr f z (MS xs))
 
+-- | callNTimes, applies n times f to x
+--    @param f function to be applied
+--    @param n number of times to apply f
+--    @param x argument on which f should be appliead
+callNTimes :: (Ord t1, Num t1) => t1 -> (t2 -> t2) -> t2 -> t2
 callNTimes n f x
   | n <= 0    = x
   | otherwise = callNTimes (n - 1) f (f x)
@@ -45,11 +56,16 @@ add :: Eq a => MSet a -> a -> MSet a
 add (MS mset) v = if v `notElem` elems (MS mset) then MS ((v,1):mset)
    else MS [(x,if x == v then m + 1 else m) | (x,m) <- mset]
 
+-- Infix  add operator
+(.+) :: Eq a => MSet a -> a -> MSet a
+(.+) = add
+
+-- Adds a list of keys to a MultiSet exploiting add.
+-- useful only for readability purposes
+addList :: Eq a => MSet a -> [a] -> MSet a
 addList (MS mset) [] = MS mset
 addList (MS mset) (x:xs) = addList (add (MS mset) x) xs
 
-(.+) :: Eq a => MSet a -> a -> MSet a
-(.+) = add
 
 -- occs mset v, returning the number of occurrences of v in mset (an Int).
 occs :: Eq a => MSet a -> a -> Int
@@ -64,20 +80,20 @@ elems (MS mset) = map fst mset
 -- subeq mset1 mset2, returning True if each element of mset1 is also an element
 -- of mset2 with the same multiplicity at least.
 
--- subeq :: Eq a => MSet a -> MSet a -> Bool
--- subeq :: Eq a => MSet (MSet (MSet a)) -> MSet a -> Bool
+subeq :: Eq a => MSet a -> MSet a -> Bool
 subeq (MS mset1) (MS mset2) = all (\(x,mul) -> occs (MS mset2) x >= mul) mset1
--- union mset1 mset2
-
 
 -- union mset1 mset2, returning an MSet having all the elements of mset1 and
 -- of mset2, each with the sum of the corresponding multiplicites.
 union :: Eq a => MSet a -> MSet a -> MSet a
 union (MS mset1) (MS mset2) =
    MS ([(x,m + occs (MS mset2) x) | (x,m) <- mset1] ++ filter (\(x,m) -> x `notElem` map fst mset1) mset2)
+-- Infix union operator
 (.++) :: Eq a => MSet a -> MSet a -> MSet a
 (.++) = union
 
+
+-- Basic test for debugging
 -- ms = add empty 1
 ms :: MSet Integer
 ms = empty .+ 1 .+ 1 .+ 2 .+ 3 .+ 5 .+ 5 .+ 1
