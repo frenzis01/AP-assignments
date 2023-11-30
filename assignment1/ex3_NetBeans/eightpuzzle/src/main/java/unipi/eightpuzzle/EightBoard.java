@@ -103,6 +103,7 @@ public class EightBoard extends javax.swing.JFrame {
                     SwingUtilities.invokeLater(() -> {
                         t.setActionCommand("swapRequest");
                         t.putClientProperty("requestedLabel", 9);
+                        // TODO is t.getMyLabel() hacky?
                         t.putClientProperty("clickedTile",t.getMyLabel());
 
                     });
