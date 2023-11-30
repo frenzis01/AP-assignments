@@ -1,5 +1,9 @@
 package ex2;
 
+/**
+ * Dummy class which is annotated with 
+ * @XMLable
+ */
 public class Teacher {
    public String firstName;
    public String lastName;
