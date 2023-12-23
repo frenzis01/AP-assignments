@@ -1,10 +1,12 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
 {-# HLINT ignore "Replace case with fromMaybe" #-}
-{-# LANGUAGE FlexibleInstances #-}
 -- TODO can this directives be omittted
 
+
 module MultiSet where
+
+import Data.List (foldl')
 
 data MSet a = MS [(a,Int)] deriving (Show)
 
@@ -66,6 +68,11 @@ addList :: Eq a => MSet a -> [a] -> MSet a
 addList (MS mset) [] = MS mset
 addList (MS mset) (x:xs) = addList (add (MS mset) x) xs
 
+addToMultiset mset v = if v `notElem` (map fst mset) then ((v,1):mset)
+   else [(x,if x == v then m + 1 else m) | (x,m) <- mset]
+
+addListToMultiset l [] = l
+addListToMultiset l (x:xs) = addListToMultiset (addToMultiset l x) xs
 
 -- occs mset v, returning the number of occurrences of v in mset (an Int).
 occs :: Eq a => MSet a -> a -> Int
@@ -93,6 +100,22 @@ union (MS mset1) (MS mset2) =
 (.++) = union
 
 
+-- mapMSet :: Eq a1 => (a2 -> a1) -> MSet a2 -> MSet a1
+-- mapMSet f (MS mset) = foldl add empty (map f (map fst mset)) 
+-- mapMSet :: Eq a => (t -> a) -> MSet t -> MSet a
+mapMSet f (MS mset) = MS (foldl (\acc (v,n) -> (addListToMultiset acc (replicate n (f v)))) [] (mset))
+
+
+-- instance Functor MSet where
+   -- fmap f (MS mset) = MS (foldl (\acc (v, n) -> [(f v, n)] ++ acc) [] mset)
+   -- fmap f (MS mset) = mapMSet f (MS mset)
+
+-- instance Functor MSet where
+--    fmap f (MS mset) = foldl' (\acc v -> add acc (f v)) empty (map fst mset)
+   -- fmap f (MS mset) = MS (map (\(v, n) -> (f v, n)) mset)
+   -- fmap f (MS mset) = foldl add empty (map f (map fst mset)) 
+   -- fmap f (MS mset) = foldl add empty (map f (map (fmap f) mset))
+
 -- Basic test for debugging
 -- ms = add empty 1
 ms :: MSet Integer
@@ -104,3 +127,5 @@ ms3 = callNTimes 6 (.+ 1) empty .++ callNTimes' 4 (.+ 12) empty .+ 5 .+ 3 .+ 5
 basictest = do
    print ms
    print ms3
+   print $ mapMSet (*2) ms3
+   -- print $ fmap (*2) ms3
