@@ -100,21 +100,14 @@ union (MS mset1) (MS mset2) =
 (.++) = union
 
 
--- mapMSet :: Eq a1 => (a2 -> a1) -> MSet a2 -> MSet a1
--- mapMSet f (MS mset) = foldl add empty (map f (map fst mset)) 
--- mapMSet :: Eq a => (t -> a) -> MSet t -> MSet a
 mapMSet f (MS mset) = MS (foldl (\acc (v,n) -> (addListToMultiset acc (replicate n (f v)))) [] (mset))
 
-
+-- MSet in general cannot correctly instantiate Functor, since MSet requires the key type
+-- to instantiate the Eq typeclass, so a correct fmap implementation would have the following signature
+-- fmap::Eq b => (a -> b) -> MSet a -> MSet b
+-- which does not allow to instantiate Functor, which requires the signature for fmap to be unconstrained
 -- instance Functor MSet where
-   -- fmap f (MS mset) = MS (foldl (\acc (v, n) -> [(f v, n)] ++ acc) [] mset)
    -- fmap f (MS mset) = mapMSet f (MS mset)
-
--- instance Functor MSet where
---    fmap f (MS mset) = foldl' (\acc v -> add acc (f v)) empty (map fst mset)
-   -- fmap f (MS mset) = MS (map (\(v, n) -> (f v, n)) mset)
-   -- fmap f (MS mset) = foldl add empty (map f (map fst mset)) 
-   -- fmap f (MS mset) = foldl add empty (map f (map (fmap f) mset))
 
 -- Basic test for debugging
 -- ms = add empty 1
@@ -127,5 +120,9 @@ ms3 = callNTimes 6 (.+ 1) empty .++ callNTimes' 4 (.+ 12) empty .+ 5 .+ 3 .+ 5
 basictest = do
    print ms
    print ms3
-   print $ mapMSet (*2) ms3
-   -- print $ fmap (*2) ms3
+   let ms4 = mapMSet (*2) ms3
+   let f = (`mod` 11)
+   let g = (`mod` 4)
+   let comp = f . g
+   print ms4
+   print $ (mapMSet f (mapMSet g ms4)) == (mapMSet comp ms4)
