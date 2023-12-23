@@ -39,14 +39,15 @@ main = do
    -- Test that:
    --    Multisets m1 and m4 are not equal, 
    --    but they have the same elements;
-   print $ "m1 == m4 :" ++ show (m1 == m4)
-   print $ "elems m1 == elems m4 :" ++ show (elems m1 == elems m4)
+   let res = m1 == m4
+   print $ "m1 == m4 :" ++ show (m1 == m4) ++ " < False"
+   print $ "elems m1 == elems m4 :" ++ show (elems m1 == elems m4)  ++ " < True"
 
    -- Test that:
    --    Multiset m1 is equal to the union 
    --    of multisets m2 and m3;
    let m23 = m2 `union` m3
-   print $ "m1 == union m2 m3 :" ++ show (m1 == union m2 m3)
+   print $ "m1 == union m2 m3 :" ++ show (m1 == union m2 m3)  ++ " < True"
 
    -- Optional debug write
    --    writeMSet m1 "./output/m1.txt"
