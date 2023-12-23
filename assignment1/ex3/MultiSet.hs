@@ -4,7 +4,18 @@
 -- TODO can this directives be omittted
 
 
-module MultiSet where
+module MultiSet (
+   MSet(..),
+   add,
+   addList,
+   empty,
+   diff,
+   union,
+   occs,
+   elems,
+   subeq,
+   mapMSet,
+   basictest) where
 
 import Data.List (foldl')
 
@@ -54,10 +65,10 @@ empty = MS []
 -- add mset v, returning a multiset obtained by adding the element v to mset.
 -- Clearly, if v is already present its multiplicity has to be increased by one, otherwise it
 -- has to be inserted with multiplicity 1.
+-- add :: Eq a => MSet a -> a -> MSet a
 add :: Eq a => MSet a -> a -> MSet a
 add (MS mset) v = if v `notElem` elems (MS mset) then MS ((v,1):mset)
    else MS [(x,if x == v then m + 1 else m) | (x,m) <- mset]
-
 -- Infix  add operator
 (.+) :: Eq a => MSet a -> a -> MSet a
 (.+) = add
@@ -67,12 +78,6 @@ add (MS mset) v = if v `notElem` elems (MS mset) then MS ((v,1):mset)
 addList :: Eq a => MSet a -> [a] -> MSet a
 addList (MS mset) [] = MS mset
 addList (MS mset) (x:xs) = addList (add (MS mset) x) xs
-
-addToMultiset mset v = if v `notElem` (map fst mset) then ((v,1):mset)
-   else [(x,if x == v then m + 1 else m) | (x,m) <- mset]
-
-addListToMultiset l [] = l
-addListToMultiset l (x:xs) = addListToMultiset (addToMultiset l x) xs
 
 -- occs mset v, returning the number of occurrences of v in mset (an Int).
 occs :: Eq a => MSet a -> a -> Int
@@ -99,6 +104,13 @@ union (MS mset1) (MS mset2) =
 (.++) :: Eq a => MSet a -> MSet a -> MSet a
 (.++) = union
 
+
+-- These two have to same behaviour of add and addList, but work on lists, not on MSet
+-- They are needed for mapMSet
+addToMultiset mset v = if v `notElem` (map fst mset) then ((v,1):mset)
+   else [(x,if x == v then m + 1 else m) | (x,m) <- mset]
+addListToMultiset l [] = l
+addListToMultiset l (x:xs) = addListToMultiset (addToMultiset l x) xs
 
 mapMSet f (MS mset) = MS (foldl (\acc (v,n) -> (addListToMultiset acc (replicate n (f v)))) [] (mset))
 
