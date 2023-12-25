@@ -11,68 +11,20 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class Counter {
+   // Singleton pattern to prevent multiple instances
+   private static final Counter c = new Counter();
    public static void main(String[] args) {
       if (args.length != 1)
-      throw new IllegalArgumentException();
-   }
-   
-
-   private static Stream<Path> getFilesFromDir(Path dir) {
-      if (dir.toFile().isDirectory()) {
-         return getFileStream(dir);
-      }
-
-      return Stream.empty();
-   }
-
-   private static Stream<Path> getFileStream(Path dir) {
-      try {
-         return Files.walk(dir)
-               .flatMap(p -> {
-                  File f = p.toFile();
-                  if (f.isDirectory())
-                     return getFileStream(p);
-                  if (p.toString().endsWith(".txt"))
-                     return Stream.of(p);
-                  return Stream.empty();
-               });
-      } catch (IOException e) {
-         e.printStackTrace();
-         return Stream.empty();
-      }
-   }
-   
-   private class FileReader extends AJob<String,String>{
-      String path;
-      public FileReader (String path){
-         this.path = path;
-      }
-
-      public Stream<Pair<String,String>> execute() {
-         try {
-            return getWordStreamFromFile(this.path)
-                     .map(w -> new Pair<>(ciao(w),w));
-         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-         }
-         
-      }
-   }
-   
-   private static Stream<String> getWordStreamFromFile(String path) throws IOException{
-      Path p = Paths.get(path);
-      return Files.lines(p)
-            .flatMap(line -> Stream.of(line.split("\\s+|(?<=[\\s\\n])|(?=[\\s\\n])")))
-            .map(String::toLowerCase)
-            .filter(w -> w.length() >= 4 && w.matches("[a-z]+"));
+        throw new IllegalArgumentException();
+      
+      Path dir = Paths.get(args[0]);
+      if (!dir.toFile().isDirectory())
+         throw new IllegalArgumentException();
+      
+      // var jobs = Utils.getFilesFromDir(dir).map((f) -> c.new ReadFileJob(f));
+      
+      // Instantiate framework
    }
 
-   private static String ciao (String s){
-      // toLowerCase is performed also in getWordStreamFromFile:
-      // it is redundant but we leave it anyway for robustness 
-      char[] chars = s.toLowerCase().toCharArray();
-      Arrays.sort(chars); 
-      return new String(chars);
-   }
+   public Counter() { super();}
 }
