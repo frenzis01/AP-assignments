@@ -37,16 +37,6 @@ public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
 
       Stream<String> lines = groupedComputations.map(pair -> pair.getKey() + " : " + pair.getValue().size());
       String outputPath = "../output/count_anagrams.txt";
-      // This doesn't exploit Streams
-      // try {
-      // // Write the string to the file
-      // Files.write(Paths.get(outputPath),
-      // String.join("",lines.toList()).getBytes());
-
-      // System.out.println("File written successfully.");
-      // } catch (IOException e) {
-      // e.printStackTrace();
-      // }
 
       try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputPath))) {
          // Writing each string to the file
@@ -67,10 +57,17 @@ public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
    private class ReadFileJob extends AJob<String, String> {
       Path path;
 
+      /**
+       * @param path of the file to be read
+       */
       public ReadFileJob(Path path) {
          this.path = path;
       }
-
+      
+      /**
+       * Reads every word from a file and computes its 'ciao'
+       * @return Stream of <word,ciao(word)> pairs
+       */
       public Stream<Pair<String, String>> execute() {
          try {
             return getWordStreamFromFile(this.path)
@@ -83,8 +80,14 @@ public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
       }
    }
 
+   /**
+    * Generates a stream containing all the words inside a .txt file
+    * @param path
+    * @return Stream of the words inside the path file
+    * @throws IOException
+    */
    private static Stream<String> getWordStreamFromFile(Path path) throws IOException {
-      if (!path.toFile().isFile())
+      if (!path.toFile().isFile() || !path.toString().endsWith(".txt"))
          throw new IllegalArgumentException();
       return Files.lines(path)
             .flatMap(line -> Stream.of(line.split("\\s+|(?<=[\\s\\n])|(?=[\\s\\n])")))
@@ -92,6 +95,13 @@ public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
             .filter(w -> w.length() >= 4 && w.matches("[a-z]+"));
    }
 
+   /**
+    * ciao(str) is the string having the same length of str and
+    * containing all the characters of str
+    * in lower case and alphabetical order
+    * @param s 
+    * @return ciao(s)
+    */
    private static String ciao(String s) {
       // toLowerCase is performed also in getWordStreamFromFile:
       // it is redundant but we leave it anyway for robustness

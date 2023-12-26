@@ -1,14 +1,12 @@
 package anagramcounter;
 import  strategyjobscheduler.*;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class Counter {
    public static void main(String[] args) {
-      // Instantiate framework
+      // Instantiate framework and strategy
       JobSchedulerStrategy<String,String> st = new ReadFileStrategy();
       JobSchedulerContext<String,String> ct = new JobSchedulerContext<>(st);
+      // inversion of control
       ct.process();
    }
 }
