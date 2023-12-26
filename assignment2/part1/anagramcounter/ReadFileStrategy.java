@@ -36,7 +36,7 @@ public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
    public void output(Stream<Pair<String, List<String>>> groupedComputations) {
 
       Stream<String> lines = groupedComputations.map(pair -> pair.getKey() + " : " + pair.getValue().size());
-      String outputPath = "../output/count_anagrams.txt";
+      String outputPath = "count_anagrams.txt";
 
       try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputPath))) {
          // Writing each string to the file
