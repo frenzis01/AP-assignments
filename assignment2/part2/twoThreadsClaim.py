@@ -63,10 +63,27 @@ def fib_run_recursive(n):
 def rec_wrapper(func,*args,**kwargs):
    return func(*args,**kwargs)
 
+
+def basic_timing_decorator(iter:int=1):
+   def decorator(func):
+      @functools.wraps(func)
+      def wrapper(*args, **kwargs):
+         start_time = time.perf_counter()
+         for _ in range(iter):
+            func(*args, **kwargs)
+         end_time = time.perf_counter()
+         execution_time = end_time - start_time
+         # print(f"{func.__name__} took {execution_time:.6f} seconds to execute")
+         return execution_time
+      return wrapper
+   return decorator
+
 def test(iter:int,fun:callable,args:tuple):
 
    def write_bench_to_file(n_threads:int,seq_iter:int,iter:int):
       res = bench(n_threads=n_threads, seq_iter=seq_iter, iter=iter)(fun)(*args)
+      single_threaded_exec = basic_timing_decorator(iter=n_threads*seq_iter)(fun)(*args)
+      res["single_thread_time"] = single_threaded_exec
       filename = f"out/{fun.__name__}_{args}_{n_threads}_{seq_iter}.json"
       print(f"flushing to {filename}")
       with open(filename, 'w') as file:
