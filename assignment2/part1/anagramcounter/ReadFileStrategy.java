@@ -1,4 +1,4 @@
-package assignment2.part1.anagramcounter;
+package anagramcounter;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-import assignment2.part1.strategyjobscheduler.*;
+import strategyjobscheduler.*;
 
 public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
 
@@ -20,14 +20,14 @@ public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
       // throw new UnsupportedOperationException("Unimplemented method 'emit'");
       String userinput;
       Path path;
+      Scanner scanner = new Scanner(System.in); // Create a Scanner object
       do {
-         Scanner scanner = new Scanner(System.in); // Create a Scanner object
          System.out.println("Enter (valid) path to directory");
 
          userinput = scanner.nextLine(); // Read user input
          path = Paths.get(userinput);
-         scanner.close();
       } while (!path.toFile().isDirectory());
+      scanner.close();
 
       return Utils.getFilesFromDir(path).map((f) -> new ReadFileJob(f));
    }
@@ -35,8 +35,8 @@ public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
    @Override
    public void output(Stream<Pair<String, List<String>>> groupedComputations) {
 
-      Stream<String> lines = groupedComputations.map(pair -> pair.getKey() + " : " + pair.getValue().size() + "\n");
-      String outputPath = "output/count_anagrams.txt";
+      Stream<String> lines = groupedComputations.map(pair -> pair.getKey() + " : " + pair.getValue().size());
+      String outputPath = "../output/count_anagrams.txt";
       // This doesn't exploit Streams
       // try {
       // // Write the string to the file

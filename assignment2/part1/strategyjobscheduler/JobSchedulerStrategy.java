@@ -1,4 +1,4 @@
-package assignment2.part1.strategyjobscheduler;
+package strategyjobscheduler;
 
 import java.util.List;
 import java.util.stream.Stream;

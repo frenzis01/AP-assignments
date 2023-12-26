@@ -1,4 +1,4 @@
-package assignment2.part1.anagramcounter;
+package anagramcounter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,14 +18,15 @@ public class Utils {
    private static Stream<Path> getFileStream(Path dir) {
       try {
          return Files.walk(dir)
-               .flatMap(p -> {
-                  File f = p.toFile();
-                  if (f.isDirectory())
-                     return getFileStream(p);
-                  if (p.toString().endsWith(".txt"))
-                     return Stream.of(p);
-                  return Stream.empty();
-               });
+            .filter(p -> p.toFile().isFile() && p.toString().endsWith(".txt"));
+               // .flatMap(p -> {
+               //    File f = p.toFile();
+               //    if (f.isDirectory())
+               //       return getFileStream(p);
+               //    if (p.toString().endsWith(".txt"))
+               //       return Stream.of(p);
+               //    return Stream.empty();
+               // });
       } catch (IOException e) {
          e.printStackTrace();
          return Stream.empty();

@@ -1,4 +1,4 @@
-package assignment2.part1.strategyjobscheduler;
+package strategyjobscheduler;
 
 
 public class Pair<K,V>{
