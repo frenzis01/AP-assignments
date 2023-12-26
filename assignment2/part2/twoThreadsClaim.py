@@ -73,7 +73,6 @@ def basic_timing_decorator(iter:int=1):
             func(*args, **kwargs)
          end_time = time.perf_counter()
          execution_time = end_time - start_time
-         # print(f"{func.__name__} took {execution_time:.6f} seconds to execute")
          return execution_time
       return wrapper
    return decorator
