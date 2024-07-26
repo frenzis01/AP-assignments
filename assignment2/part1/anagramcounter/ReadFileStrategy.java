@@ -15,9 +15,12 @@ import strategyjobscheduler.*;
 
 public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
 
+   /**
+    * Prompts the user to enter a path to a directory,
+    * and returns a Stream of ReadFileJob objects, one for each file in the directory (and subdirs)
+    */
    @Override
    public Stream<AJob<String, String>> emit() {
-      // throw new UnsupportedOperationException("Unimplemented method 'emit'");
       String userinput;
       Path path;
       Scanner scanner = new Scanner(System.in); // Create a Scanner object
@@ -32,6 +35,10 @@ public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
       return Utils.getFilesFromDir(path).map((f) -> new ReadFileJob(f));
    }
 
+   /**
+    * Groups the results of the ReadFileJob computations by the 'ciao' value
+    * and writes the count of anagrams for each 'ciao' value to a file in the work dir
+    */
    @Override
    public void output(Stream<Pair<String, List<String>>> groupedComputations) {
 

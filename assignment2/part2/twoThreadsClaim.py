@@ -10,12 +10,15 @@ def bench (n_threads:int=1,seq_iter:int=1,iter:int=1):
    def decorator(func):
       @functools.wraps(func)
       def wrapper(*args,**kwargs):
+         # This loop will be assigned as target to threads
          def seq_iter_loop (func,*args, **kwargs): 
             for _ in range (seq_iter):
                func(*args,**kwargs)
+               
+         # We must, for iter times, deploy n_threads threads, each running seq_iter_loop
          for _ in range(iter):
-            workers = []
-            start = time.perf_counter()
+            workers = []   # needed to keep track of threads and join them later
+            start = time.perf_counter()   # measure start time as thread deployment starts
             print("Deploying threads: " + str(start))
             for i in range(n_threads):
                t_args = (func,) + args
@@ -29,6 +32,7 @@ def bench (n_threads:int=1,seq_iter:int=1,iter:int=1):
             end = time.perf_counter()
             exec_times.append(end - start)
 
+         # mean and variance of execution times
          mean = stats.mean(exec_times)
          variance = stats.variance(exec_times)
 
@@ -114,6 +118,8 @@ def grezzo(n):
 def main():
    test(iter=5,fun=just_wait,args=(1,))
    test(iter=5,fun=grezzo,args=(10,))
+   test(iter=5,fun=fib_run,args=(15,))
+   test(iter=5,fun=fib_run_recursive,args=(15,))
 
    # result = fib_run(28)
    # print(result)
