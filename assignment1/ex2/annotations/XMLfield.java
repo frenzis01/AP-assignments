@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface XMLfield {
-   // TODO is there any way to allow only primitive types names?
    String type(); // primitive type of the field (e.g., "int", "String", ...)
    String name() default ""; // (Optional) argument for the XML tag to be used for the field
 
