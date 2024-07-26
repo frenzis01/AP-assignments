@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use newtype instead of data" #-}
 {-# HLINT ignore "Replace case with fromMaybe" #-}
--- TODO can this directives be omittted
+-- These directives simply omit some linter warnings 
 
 
 module MultiSet (
@@ -107,19 +107,35 @@ union (MS mset1) (MS mset2) =
 
 -- These two have to same behaviour of add and addList, but work on lists, not on MSet
 -- They are needed for mapMSet
-addToMultiset mset v = if v `notElem` (map fst mset) then ((v,1):mset)
+addToMultiset :: (Eq a, Num b) => [(a, b)] -> a -> [(a, b)]
+addToMultiset mset v = if v `notElem` map fst mset then (v,1) : mset
    else [(x,if x == v then m + 1 else m) | (x,m) <- mset]
-addListToMultiset l [] = l
-addListToMultiset l (x:xs) = addListToMultiset (addToMultiset l x) xs
 
-mapMSet f (MS mset) = MS (foldl (\acc (v,n) -> (addListToMultiset acc (replicate n (f v)))) [] (mset))
+-- These two addListToMultiset definitions are equal
+-- inferred type signature differs a bit
+addListToMultiset :: (Eq a, Num b) => [(a, b)] -> [a] -> [(a, b)]
+-- addListToMultiset l [] = l
+-- addListToMultiset l (x:xs) = addListToMultiset (addToMultiset l x) xs
+-- addListToMultiset :: [(Integer, Int)] -> [Integer] -> [(Integer, Int)]
+addListToMultiset = foldl addToMultiset
 
--- MSet in general cannot correctly instantiate Functor, since MSet requires the key type
--- to instantiate the Eq typeclass, so a correct fmap implementation would have the following signature
--- fmap::Eq b => (a -> b) -> MSet a -> MSet b
--- which does not allow to instantiate Functor, which requires the signature for fmap to be unconstrained
+mapMSet f (MS mset) = MS (foldl (\acc (v,n) -> addListToMultiset acc (replicate n (f v))) [] mset)
+
+{-
+-------------------------------------------------------------------------------------------------------
+------------------------------------------------FUNCTOR------------------------------------------------
+-------------------------------------------------------------------------------------------------------
+
+
 -- instance Functor MSet where
-   -- fmap f (MS mset) = mapMSet f (MS mset)
+--    fmap f (MS mset) = mapMSet f (MS mset)
+The previous statement throws an error:
+MSet in general cannot correctly instantiate Functor, since MSet requires the key type
+to instantiate the Eq typeclass, so a correct fmap implementation would have the following signature
+   fmap::Eq b => (a -> b) -> MSet a -> MSet b
+which does not allow to instantiate Functor, which requires the signature for fmap to be unconstrained
+    fmap :: (a -> b) -> f a -> f b
+-}
 
 -- Basic test for debugging
 -- ms = add empty 1
@@ -137,4 +153,8 @@ basictest = do
    let g = (`mod` 4)
    let comp = f . g
    print ms4
-   print $ (mapMSet f (mapMSet g ms4)) == (mapMSet comp ms4)
+   print $ mapMSet f (mapMSet g ms4) == mapMSet comp ms4
+
+   let exp_out = "\n---Expected output:\nMS [(5,2),(3,1),(2,1),(1,3)]\nMS [(3,1),(5,2),(1,6),(12,4)]\nMS [(24,4),(2,6),(10,2),(6,1)]\nTrue"
+   -- putStr to evaluate the \n
+   putStr exp_out
