@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
+import unipi.eightpuzzle.utils.IntWrapper;
 
 /**
  * This represents one of the tiles in the board.
@@ -20,7 +21,6 @@ import javax.swing.SwingUtilities;
 public class EightTile extends javax.swing.JButton implements ActionListener{
     private final int position;
     private int label;
-    private VetoableChangeListener listener;
     private VetoableChangeSupport mVcs = new VetoableChangeSupport(this);
     
     // Constructor to set initial position and label,
@@ -38,7 +38,21 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
     public boolean labelRequest (int newLabel) {
         try{
             String propertyName = newLabel == 9 ? "labelSwap" : "flip";
-            this.mVcs.fireVetoableChange(propertyName, label, newLabel);
+            /**
+             * this.mVcs.fireVetoableChange(propertyName, this.label, newLabel);
+             * 
+             * Instead of using the oldValue of the changed property (label),
+             * we pass the position, since it will be needed by the Controller.
+             * We are bending the semantic meaning of 'oldValue', but should be fine
+             *
+             * However, writing simply
+             * this.mVcs.fireVetoableChange(propertyName, this.position, newLabel);
+             * is not feasible, because if position == newLabel, then the event
+             * DOES NOT get fired, resulting in a broken application
+             * 
+             * We need a wrapper for the trick to work
+             */
+            this.mVcs.fireVetoableChange(propertyName, new IntWrapper(this.position), newLabel);
             // if an exception is thrown, we do not update the label
             updateLabel(newLabel);
             return true;
@@ -79,7 +93,8 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
         // Assume the label from the requesting tile has already been updated, its not this tile's responsability to handle such thing
         if("swapOK".equals(source.getActionCommand()) && (this.label == (int)source.getClientProperty("requestedLabel"))){
             int newLabel = (int) source.getClientProperty("clickedTile");
-            System.out.println(position + ":" + label + " received " + newLabel + " by " + ((EightTile)source).getPosition());
+            // ((EightTile)source).getPosition() is a bit hacky, but it's just for debug/readability print
+            System.out.println(position + ":" + label + " received label " + newLabel + " by position" + ((EightTile)source).getPosition());
             this.updateLabel(newLabel);
             this.putClientProperty("clickedTile",newLabel);
             
@@ -99,7 +114,6 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
     }
     
     public void updateColor (){
-        System.out.println(position + " : " +label );
         if (label == 9)
             this.setBackground(Color.DARK_GRAY);
         else if (position == label)

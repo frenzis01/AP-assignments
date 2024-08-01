@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package unipi.eightpuzzle;
 
 import java.awt.event.ActionEvent;
@@ -13,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import unipi.eightpuzzle.utils.IntWrapper;
 
 /**
  * Label which displays info on the last performed move, and which establishes whether
@@ -43,11 +40,24 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         if ("labelSwap".equals(pce.getPropertyName())) {
             // Here we work with positions, not labels
             // labels are handled by the tiles theirselves
-            int tileToBeMoved = ((EightTile) pce.getSource()).getPosition();
+            
+            /**
+             * int tileToBeMoved = ((EightTile) pce.getSource()).getPosition();
+             * 
+             * The assignment requires to do not use methods to read 'labels', 
+             * but assuming that this applies also to 'position', 
+             * we avoid the statement above, in favour of exploiting 
+             * pce.oldValue to pass the position.
+             * 
+             * position must be wrapped, otherwise in case oldValue == newValue
+             * the event does not get fired.
+             * (it clearly may happen that position == newLabel)
+            */
+            int tileToBeMoved = ((IntWrapper) pce.getOldValue()).value;
+            
             System.out.println("Clicked : " + tileToBeMoved + " | Hole : " + this.hole);
             if (false == this.adj.contains(tileToBeMoved)) {
                 this.setText("KO");
-                System.out.println("ILLEGAL OP");
                 throw new PropertyVetoException("Tile is not adjacent to hole", pce);
             }
             // If tile can be moved, update hole
