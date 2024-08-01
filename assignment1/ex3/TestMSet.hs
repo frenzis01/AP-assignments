@@ -1,5 +1,4 @@
 import MultiSet
--- import GHC.IO
 import Data.Char (toLower, isAlpha)
 import Data.List (sort)
 
@@ -9,6 +8,7 @@ import Data.List (sort)
 -- 
 -- @param str string to compute the ciao
 -- @returns ciao of str
+ciao :: [Char] -> [Char]
 ciao str = sort $ map toLower str
 
 -- Computes the ciao of every word inside a text file,
@@ -30,6 +30,7 @@ writeMSet (MS mset) path = do
    let lines = [show x ++ " - " ++ show m | (x,m) <- mset]
    writeFile path (unlines lines)
 
+main :: IO ()
 main = do
    m1 <- readMSet "../aux_files/anagram.txt"
    m2 <- readMSet "../aux_files/anagram-s1.txt"
@@ -40,14 +41,14 @@ main = do
    --    Multisets m1 and m4 are not equal, 
    --    but they have the same elements;
    let res = m1 == m4
-   print $ "m1 == m4 :" ++ show (m1 == m4) ++ " < False"
-   print $ "elems m1 == elems m4 :" ++ show (elems m1 == elems m4)  ++ " < True"
+   print $ "m1 == m4 :" ++ show (m1 == m4) ++ " < expected False"
+   print $ "elems m1 == elems m4 :" ++ show (elems m1 == elems m4)  ++ " < expected True"
 
    -- Test that:
    --    Multiset m1 is equal to the union 
    --    of multisets m2 and m3;
    let m23 = m2 `union` m3
-   print $ "m1 == union m2 m3 :" ++ show (m1 == union m2 m3)  ++ " < True"
+   print $ "m1 == union m2 m3 :" ++ show (m1 == union m2 m3)  ++ " < expected True"
 
    -- Optional debug write
    --    writeMSet m1 "./output/m1.txt"

@@ -61,6 +61,7 @@ public class XMLSerializer {
                String serializedField = serializeFieldToXML(type,fieldName, f.get(o));
                serializedObj.add(serializedField);
             } catch (IllegalArgumentException | IllegalAccessException e) {
+               // skip if field is not accessible, do not fail whole execution
                continue;
                // e.printStackTrace();
             }
@@ -91,7 +92,7 @@ public class XMLSerializer {
    private static Map<String,IntrospectedClass> introspectedClasses = new HashMap<>();
 
    /**
-    * Checks whether the class whose o is an instance of has been previously introspected,
+    * Checks whether the class whose 'o' is an instance of has been previously introspected,
     * if yes, the corresponding IntrospectedClass object is returned,
     * otherwise a new IntrospectedClass is added to introspectedClasses first
     *
@@ -118,7 +119,7 @@ public class XMLSerializer {
          this.name = o.getClass().getName();
          if (o.getClass().getAnnotation(XMLable.class) != null){
             this.labeled = true;
-            this.labeledFields = Stream.of(o.getClass().getDeclaredFields())
+            this.labeledFields = Stream.of(o.getClass().getFields())
                // map each Field to a Pair<Field,XMLfield> if possible
                //      otherwise null
                .map((Field f) -> {
@@ -143,13 +144,13 @@ public class XMLSerializer {
     * @return String("<'name' type='type'> 'value' </'name'>") 
     */
    private static String serializeFieldToXML(String type, String name, Object value){
+      // value == null is a valid case
       if (type == "" || name == "")
          throw new IllegalArgumentException();
-      String value_str = value.toString();
-      return "<" + name + " type= " + type + ">" + value_str + "</" + name + ">";
+      return "<" + name + " type= " + type + ">" + value + "</" + name + ">";
    }
 
-   // Immutabel pair
+   // Immutable pair
    private class Pair<A, B> {
       private final A a;
       private final B b;

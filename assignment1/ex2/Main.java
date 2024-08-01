@@ -16,9 +16,9 @@ public class Main {
       for(int i = 0; i < nStudents; i++){
          objs[i + 1] = new Student(randstr(r.nextInt(5,15)), randstr(r.nextInt(5,15)),r.nextInt(5,100));
       }
-      // System.out.println(nStudents+1);
+      // Add random teachers
       for(int i = 0; i < nTeachers; i++){
-         objs[i + nStudents + 1] = new Teacher(); // no need to init fields
+         objs[i + nStudents + 1] = new Teacher(randstr(r.nextInt(5,15)), randstr(r.nextInt(5,15)),r.nextInt(5,100));
       }
 
       XMLSerializer.serialize(objs, "assignment1/ex2/serialized.xml");
