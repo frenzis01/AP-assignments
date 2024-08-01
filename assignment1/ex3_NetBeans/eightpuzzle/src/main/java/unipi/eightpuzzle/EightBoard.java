@@ -15,12 +15,14 @@ import java.util.stream.Stream;
 import javax.swing.SwingUtilities;
 
 /**
- *
+ * Graphical dashboard and Main Class.
+ * Noticed that tiles are positioned accordingly to the assignment
+ * they are not numerically ordered.
  * @author Francesco Lorenzoni
  */
 public class EightBoard extends javax.swing.JFrame {
 
-//    EightController controller;
+    // EightController controller; // controller is init as component
     EightTile[] tiles = new EightTile[9];
     
     /**
@@ -28,7 +30,6 @@ public class EightBoard extends javax.swing.JFrame {
      */
     public EightBoard() {
         initComponents();
-        // ugly init
         this.tiles[0] = eightTile1;
         this.tiles[1] = eightTile2;
         this.tiles[2] = eightTile3;
@@ -39,11 +40,17 @@ public class EightBoard extends javax.swing.JFrame {
         this.tiles[7] = eightTile8;
         this.tiles[8] = eightTile9;
         
+        // Controller displaying START/OK/KO and vetoing changes
         flip1.addVetoableChangeListener(eightController1);
         flip1.setActionCommand("flip");
         
         flip1.addActionListener((ActionEvent ae) -> {
+            // Attempt to Flip tiles
             if (flip1.flipTiles()){
+                // Note that getLabel1() yields the label which will go in the position
+                // after (!) the swap, not the current one. 
+                // Checking terminal output might help understand
+                // i.e. tile_1=4 && tile_2=7  =>  getLabel1()=7
                 eightTile1.putClientProperty("requestedLabel", flip1.getLabel1());
                 System.out.println("Setting request -> "+ flip1.getLabel1());
                 eightTile1.doClick();
@@ -54,47 +61,59 @@ public class EightBoard extends javax.swing.JFrame {
         
         // Initialize the first permutation
         int[] permutation = generatePermutation(1,9);
+        // Assign permutation to the RESTART button
         restart.putClientProperty("permutation",permutation);
-//        initBoard(permutation);
+        // Controller and Flip btn should be aware of restarts (and first start)
         restart.addActionListener(eightController1);
         restart.addActionListener(flip1);
         
 
         // Tiles must listen for 'restart' event
-        // and for the 'swap'event of other tiles
         for (EightTile t : tiles) {
             restart.addActionListener(t);
+            // Tiles swap must be vetoed by the controller
             t.addVetoableChangeListener(eightController1);
-        }  
+        } 
+        // This will actually initialize the board, 
+        // assigning position to the tiles
         restart.doClick();
         
+        
         for (EightTile t : tiles) {
+            // When clicked a tile requests to be swapped with the hole
             t.setActionCommand("swapRequest");
             t.putClientProperty("clickedTile",t.getMyLabel());
-            t.putClientProperty("requestedLabel", 9); 
+            // A tile will always (unless 'Flip') request to be swapped with the hole
+            // label == 9 => Hole
+            t.putClientProperty("requestedLabel", 9);
+            
+            // A tile should hear the event of a swap request or that a swap has succeeded
             t.addActionListener((ActionEvent ae) -> {
-//                System.out.println(ae.getActionCommand());
                 if ("swapRequest".equals(ae.getActionCommand())) {
                     int 
                             oldLabel = t.getMyLabel(),
                             requestedLabel = (int) t.getClientProperty("requestedLabel");
 
-                    // This is always 9 unless t == eightTile1 and flip has been clicked
+                    // requestedLabel is always 9 unless t == eightTile1 and flip has been clicked
+                    // labelRequest returns false is the change gets blocked by Controller
                     if (t.labelRequest(requestedLabel)) { 
-                        //tile has been successfully moved
+                        // if here, tile can be successfully moved and has updated its label becoming the new hole,
+                        // but the other tile (old hole) has yet to update its label
+                        // it will be done once it hears swapOK
                         System.out.println(t.getPosition() + ":" + requestedLabel + " sent " + t.getClientProperty("clickedTile"));
                         
                         // We will fire a second event labeled "swapOK"
-                        // Every listener will know that the tile swap wa successful
+                        // Every listener will know that the tile swap was successful
                         t.setActionCommand("swapOK");
-                        // This is needed by Flip button
+                        // This is needed by Flip button to know where the hole is
                         t.putClientProperty("swappedLabel", oldLabel);
-                        // Fire event to all listeners
+                        // Fire swapOK event to all listeners,
+                        // so that the old hole updates its label
                         t.doClick();
                     }
                 }
                 if ("swapOK".equals(ae.getActionCommand()) ){
-                    // Revert back to previous actionCommand
+                    // Need to revert back to previous actionCommand 'swapRequest'
                     
                     // invokeLater is needed to ensure sequentiality
                     //    i.e. swapRequest -> swapOK
@@ -103,20 +122,39 @@ public class EightBoard extends javax.swing.JFrame {
                     SwingUtilities.invokeLater(() -> {
                         t.setActionCommand("swapRequest");
                         t.putClientProperty("requestedLabel", 9);
-                        // TODO is t.getMyLabel() hacky?
                         t.putClientProperty("clickedTile",t.getMyLabel());
-
                     });
                 }
 
             });
-            
+            // A tile listens for the events fired by other tiles expect itself
             Stream  .of(tiles)
                     .filter(tile -> tile.getPosition() != t.getPosition())
                     .forEach(tile -> tile.addActionListener(t));
             t.addActionListener(flip1);
         }
         
+    }
+
+    public static int indexOf(int arr[], int v) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == v) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static int[] generatePermutation(int low, int high) {
+        // Initialize with numbers between low and high
+        List<Integer> numbers = IntStream.rangeClosed(low, high)
+                .boxed()
+                .collect(Collectors.toList());
+
+        // Random permutation through list shuffling
+        Collections.shuffle(numbers);
+        // Map to int[]
+        return numbers.stream().mapToInt(Integer::intValue).toArray();
     }
 
     /**
@@ -220,32 +258,13 @@ public class EightBoard extends javax.swing.JFrame {
     private void restartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restartActionPerformed
         System.out.println("-----------RESTARTED----------");
         
-        // This permutation will be adopted by the next restart click
+        // This permutation  will be adopted by the next restart click
         // Not the current one
-        
         int[] permutation = generatePermutation(1,9);
-//        Stream.of(permutation).forEach(System.out::println);
-//        eightController1.setHole(1+indexOf(permutation,9)); // handled
         restart.setActionCommand("restart");
-        // restart.putClientProperty("permutation",List.of(permutation));
         restart.putClientProperty("permutation",permutation);
-//        System.out.print("----next -> ");
-        
-//        for (int i: permutation)
-//            System.out.print(i + " ");
-//        System.out.println();
-
-
     }//GEN-LAST:event_restartActionPerformed
 
-    public static int indexOf (int arr[], int v){
-        for(int i = 0; i<arr.length;i++){
-            if (arr[i] == v)
-                return i;
-        }
-        return -1;
-    }
-    
     /**
      * @param args the command line arguments
      */
@@ -272,10 +291,6 @@ public class EightBoard extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(EightBoard.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-
-//        EightTile t = new EightTile(2,3);
-
-        
         
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -285,33 +300,8 @@ public class EightBoard extends javax.swing.JFrame {
         });
     }
 
-    private static int[] generatePermutation (int low, int high) {
-        // Initialize with numbers between low and high
-        List<Integer> numbers = IntStream.rangeClosed(low, high)
-                .boxed()
-                .collect(Collectors.toList());
 
-        // Random permutation through list shuffling
-        Collections.shuffle(numbers);
-//        System.out.println("---------------------");
-//        for(Integer i:numbers)
-//            System.out.println(i + (i + 1 == numbers.indexOf(i) ? " ------": ""));
-        // Map to int[]
-        return numbers.stream().mapToInt(Integer::intValue).toArray();
-    }
-    
-    private void initBoard(int[] permutation){
-//        for (int i = 0; i < 9; i++){
-//            this.tiles[i].initLabel(i+1);
-//            this.tiles[i].setText(String.valueOf(i+1));
-////            this.tiles[i].addActionListener(l);
-//        }
-//        int[] permutation = generatePermutation(1,9);
-        for(EightTile t: this.tiles)
-            t.restart(permutation);
-        eightController1.setHole(1+indexOf(permutation,9));
-    }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private unipi.eightpuzzle.EightController eightController1;
     private unipi.eightpuzzle.EightTile eightTile1;

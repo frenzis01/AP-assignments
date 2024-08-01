@@ -12,15 +12,19 @@ import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 
 /**
- *
- * @author Francesco
+ * This represents one of the tiles in the board.
+ * The position of each tile is fixed, they do not 'move' in the board,
+ * their Labels do change instead
+ * @author Francesco Lorenzoni
  */
 public class EightTile extends javax.swing.JButton implements ActionListener{
-    private int position;
+    private final int position;
     private int label;
     private VetoableChangeListener listener;
     private VetoableChangeSupport mVcs = new VetoableChangeSupport(this);
     
+    // Constructor to set initial position and label,
+    // but label will be changed later on
     public EightTile (int position, int label) {
         if (!isValid(position) || !isValid(label))
             throw new IllegalArgumentException();
@@ -30,18 +34,21 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
        this.updateColor();
     }
     
-    
+    // function invoked on click
     public boolean labelRequest (int newLabel) {
         try{
             String propertyName = newLabel == 9 ? "labelSwap" : "flip";
             this.mVcs.fireVetoableChange(propertyName, label, newLabel);
+            // if an exception is thrown, we do not update the label
             updateLabel(newLabel);
             return true;
         }
         catch(PropertyVetoException e){
+            // Tile is not adjacent to the hole
+            
             this.setBackground(Color.RED);
 
-            // recover background SwingUtilities.invokeLater
+            // recover background after some time with SwingUtilities.invokeLater
             SwingUtilities.invokeLater(() -> {
                 try {
                     Thread.sleep(500);
@@ -54,6 +61,7 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
         
     }
 
+    // On restart, get new label from permutation
     public void restart(int[] labelPermutation) {
         int newLabel = labelPermutation[this.position-1];
         updateLabel(newLabel);
@@ -67,6 +75,8 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
             int[] permutation = (int[]) source.getClientProperty("permutation");
             this.restart(permutation);
         }
+        // If a swap has been approved by the Controller && this tile holds the requested Label then update the label of this Tile.
+        // Assume the label from the requesting tile has already been updated, its not this tile's responsability to handle such thing
         if("swapOK".equals(source.getActionCommand()) && (this.label == (int)source.getClientProperty("requestedLabel"))){
             int newLabel = (int) source.getClientProperty("clickedTile");
             System.out.println(position + ":" + label + " received " + newLabel + " by " + ((EightTile)source).getPosition());
@@ -76,14 +86,12 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
         }
     }
     
+    // ---------- Utilities from now on
+    
     private void updateLabel(int newLabel){
         this.label = newLabel;
         this.updateColor();
         this.updateText();
-    }
-
-    public EightTile(){
-        super();
     }
     
     private static boolean isValid(int pos) {
