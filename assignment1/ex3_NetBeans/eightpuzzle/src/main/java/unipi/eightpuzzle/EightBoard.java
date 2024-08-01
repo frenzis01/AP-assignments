@@ -1,12 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package unipi.eightpuzzle;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +46,6 @@ public class EightBoard extends javax.swing.JFrame {
                 // Checking terminal output might help understand
                 // i.e. tile_1=4 && tile_2=7  =>  getLabel1()=7
                 eightTile1.putClientProperty("requestedLabel", flip1.getLabel1());
-                System.out.println("Setting request -> "+ flip1.getLabel1());
                 eightTile1.doClick();
             }
         });
@@ -100,7 +93,7 @@ public class EightBoard extends javax.swing.JFrame {
                         // if here, tile can be successfully moved and has updated its label becoming the new hole,
                         // but the other tile (old hole) has yet to update its label
                         // it will be done once it hears swapOK
-                        System.out.println(t.getPosition() + ":" + requestedLabel + " sent " + t.getClientProperty("clickedTile"));
+                        System.out.println("Position " + t.getPosition() + " requested label " + requestedLabel + " and sent (old) label" + t.getClientProperty("clickedTile"));
                         
                         // We will fire a second event labeled "swapOK"
                         // Every listener will know that the tile swap was successful

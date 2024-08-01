@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package unipi.eightpuzzle;
 
 import java.awt.Color;
@@ -93,7 +89,6 @@ public class Flip extends JButton implements ActionListener {
             
             // swappedLabel became the hole
             int swappedLabel = (int) source.getClientProperty("swappedLabel");
-            System.out.println("swapped: " + swappedLabel);
             // if one of the flippable labels were either the hole or 
             // the swapped one, they must be locally updated
             if (this.label1 == 9)
@@ -105,7 +100,7 @@ public class Flip extends JButton implements ActionListener {
                 this.label2 = swappedLabel;
             else if (this.label2 == swappedLabel)
                 this.label2 = 9;
-            System.out.println("REGULAR SWAP - Flippables: "+ label1 + " " + label2);
+            System.out.println("Flippables now are: "+ label1 + " " + label2);
             
         }
         
