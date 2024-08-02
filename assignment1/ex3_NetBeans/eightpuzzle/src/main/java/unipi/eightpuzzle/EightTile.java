@@ -79,7 +79,7 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
     }
 
     // On restart, get new label from permutation
-    public void restart(int[] labelPermutation) {
+    private void restart(int[] labelPermutation) {
         int newLabel = labelPermutation[this.position-1];
         updateLabel(newLabel);
         this.putClientProperty("clickedTile",newLabel);
@@ -116,7 +116,7 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
         return pos > 0 && pos <= 9;
     }
     
-    public void updateColor (){
+    private void updateColor (){
         if (label == 9)
             this.setBackground(Color.DARK_GRAY);
         else if (position == label)
@@ -125,7 +125,7 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
             this.setBackground(Color.YELLOW);
     }
     
-    public void updateText (){
+    private void updateText (){
         if (this.label == 9)
             this.setText(" ");
         else{
