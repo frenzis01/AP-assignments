@@ -87,7 +87,7 @@ public class EightBoard extends javax.swing.JFrame {
             // label == 9 => Hole
             t.putClientProperty("requestedLabel", 9);
             
-            // A tile should hear the event of a swap request or that a swap has succeeded
+            // We have a dedicated listener for each tile to handle the tile being clicked
             t.addActionListener((ActionEvent ae) -> {
                 if ("swapRequest".equals(ae.getActionCommand())) {
                     int 
