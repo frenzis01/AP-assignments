@@ -6,8 +6,6 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.beans.VetoableChangeSupport;
-import java.util.List;
-import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.SwingUtilities;
 import unipi.eightpuzzle.utils.IntWrapper;
@@ -32,6 +30,11 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
         this.label = label;
        this.updateText();
        this.updateColor();
+    }
+    
+    public EightTile() {
+        super();
+        this.position=-1;
     }
     
     // function invoked on click
