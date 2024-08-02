@@ -1,0 +1,12 @@
+{
+   "fun": "fib_run_recursive",
+   "args": [
+      15
+   ],
+   "n_threads": 4,
+   "seq_iter": 4,
+   "iter": 5,
+   "mean": 0.0032034999996540135,
+   "variance": 4.091589490693705e-08,
+   "single_thread_time": 0.0020331000014266465
+}

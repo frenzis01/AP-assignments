@@ -87,7 +87,9 @@ def test(iter:int,fun:callable,args:tuple):
       res = bench(n_threads=n_threads, seq_iter=seq_iter, iter=iter)(fun)(*args)
       single_threaded_exec = basic_timing_decorator(iter=n_threads*seq_iter)(fun)(*args)
       res["single_thread_time"] = single_threaded_exec
-      filename = f"out/{fun.__name__}_{args}_{n_threads}_{seq_iter}.json"
+      # TODO if fun.__name__ includes fib_run export it in folder fib_run
+      outputFolder = "fib_run/" if "fib_run" in fun.__name__ else ""
+      filename = f"out/{outputFolder}{fun.__name__}_{args}_{n_threads}_{seq_iter}.json"
       print(f"flushing to {filename}")
       with open(filename, 'w') as file:
          file.write(str(json.dumps(res, indent=3)))
