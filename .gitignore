@@ -1,29 +1,24 @@
 assignment1/ex2/*.class
 
-# !assignment1/ex3_NetBeans/
+assignment1/ex1/*
+!assignment1/ex1/eightpuzzle/
 
-Davide/*
-Davide
+assignment1/ex1/eightpuzzle/*
+!assignment1/ex1/eightpuzzle/src/
 
-assignment1/ex3_NetBeans/*
-!assignment1/ex3_NetBeans/eightpuzzle/
+assignment1/ex1/eightpuzzle/src/*
+!assignment1/ex1/eightpuzzle/src/main/
 
-assignment1/ex3_NetBeans/eightpuzzle/*
-!assignment1/ex3_NetBeans/eightpuzzle/src/
+assignment1/ex1/eightpuzzle/src/main/*
+!assignment1/ex1/eightpuzzle/src/main/java/
 
-assignment1/ex3_NetBeans/eightpuzzle/src/*
-!assignment1/ex3_NetBeans/eightpuzzle/src/main/
+assignment1/ex1/eightpuzzle/src/main/java/*
+!assignment1/ex1/eightpuzzle/src/main/java/unipi/
 
-assignment1/ex3_NetBeans/eightpuzzle/src/main/*
-!assignment1/ex3_NetBeans/eightpuzzle/src/main/java/
+assignment1/ex1/eightpuzzle/src/main/java/unipi/*
+!assignment1/ex1/eightpuzzle/src/main/java/unipi/eightpuzzle/
 
-assignment1/ex3_NetBeans/eightpuzzle/src/main/java/*
-!assignment1/ex3_NetBeans/eightpuzzle/src/main/java/unipi/
-
-assignment1/ex3_NetBeans/eightpuzzle/src/main/java/unipi/*
-!assignment1/ex3_NetBeans/eightpuzzle/src/main/java/unipi/eightpuzzle/
-
-assignment1/ex3_NetBeans/eightpuzzle/src/main/java/unipi/eightpuzzle/*.form
+assignment1/ex1/eightpuzzle/src/main/java/unipi/eightpuzzle/*.form
 
 assignment2/part2/test.py
 assignment2/aux_files/_Book/*
@@ -34,3 +29,4 @@ assignment2/part1/.vscode
 
 *.jar
 *.arj
+/assignment1/ex1/eightpuzzle/target/
