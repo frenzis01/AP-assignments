@@ -1,0 +1,12 @@
+{
+   "fun": "fib_run",
+   "args": [
+      15
+   ],
+   "n_threads": 1,
+   "seq_iter": 16,
+   "iter": 5,
+   "mean": 0.0330161401998339,
+   "variance": 1.4324993379457369e-05,
+   "single_thread_time": 0.03546540000024834
+}
