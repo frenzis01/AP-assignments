@@ -1,0 +1,77 @@
+\chapter{EightPuzzle with Java Beans}
+
+\section{About folders content}
+
+The assignment development was tracked using git. The repository is available at \href{https://github.com/frenzis01/AP-assignments}{github.com/frenzis01/AP-assignments}.\\
+The folder of the first exercise of the assignment is \texttt{assignment1/ex3\_NetBeans}. 
+I initially numerated it as 3 by mistake, but I kept it that way (both in the github repo, and in the email-submitted archive, for ``consistency'') to avoid erasing the git history.
+
+The folder contains only the class files, for ease of reading.
+There is also the \texttt{.jar} file (renamed to \texttt{.raj}) which may be tested as it is.
+% // TODO
+There is also a .zip archive resulting from the export of the NetBeans project, which contains the source code and the NetBeans project files; it may be imported in NetBeans to navigate and test project from the IDE.
+% // TODO
+
+
+\section{Main Design Choices}
+
+Components are exactly the ones required by the assignment: \lstinline|EightTile|, \lstinline|EightBoard|, \lstinline|EightController| and \lstinline|Flip|, with the only addition of a simple wrapper class \lstinline|IntWrapper| under the \lstinline|utils| package.
+
+\subsection{\texttt{position} and \texttt{label} attributes}
+\begin{paracol}{2}
+   \colfill
+   It is important to keep in mind that \lstinline|EightTile| components are positioned as in Fig. \ref{fig:netBeans_board}, mirroring the disposition of the tiles in the assignment description.
+   Every \lstinline|EightTile| is instantiated with the expected corresponding \lstinline|position|, i.e. \lstinline|eightTile6| $ \rightarrow $ \lstinline|eightTile6.position = 6|.
+
+   \lstinline|EightTiles| \textit{never} ``move'' in the board and neither their \lstinline|final position| attribute ever changes, only the \lstinline|label| attribute is changed throughout the game, mimicking the sliding of the tiles.
+
+   \note{\lstinline|label| is private, there is no getter and no setter. It is changed only when invoking \lstinline|labelRequest()| (which fires a vetoable change) and upon receival of \lstinline|"swapOK"| and \lstinline|"restart"| events.}
+   \colfill
+   
+   
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/netBeans_board.png}
+      \caption{\lstinline|EightTile| components organized in the \lstinline|EightBoard| grid}
+      \label{fig:netBeans_board}
+   \end{figure}
+\end{paracol}
+
+\subsection{Observer pattern}
+
+The interaction between components is based on events and listeners, following the Observer pattern.
+\lstinline|EightTile.label| is a \textit{Constrained Property} which fires a \lstinline|PropertyChangeEvent| by invoking \lstinline|fireVetoableChange(...)| on the \lstinline|EightController| instance, which is responsible for ensuring that only legal changes are allowed.
+The three scenarios for a \lstinline|label| change are:
+\begin{itemize}
+   \item \textit{Tile got clicked}: clicked \lstinline|EightTile| may move to the \textit{hole} (i.e. \lstinline|EightTile| whose \lstinline|label == 9|), if it is adjacent to it.
+   \item \textit{Flip button got clicked}: tiles in position 1 and 2 are swapped, if the \textit{hole} is in the middle (\lstinline|position == 5|) 
+   \item \textit{Restart button got clicked}: tiles receive a permutation and infer their new label; in this case, such change is not vetoed.
+\end{itemize} 
+
+\subsection{Events}
+\subsubsection{Clicking a Tile}
+When an \lstinline|EightTile| gets clicked it attempts to swap its position to the hole. To do so, sets the property \lstinline|requestedLabel = 9| (i.e. hole), and executes \lstinline|EightTile.labelRequest(9)| which fires a \lstinline|PropertyChangeEvent| with \lstinline|propertyName = "label"|, \lstinline|oldValue = position| and \lstinline|newValue = 9|.
+
+\framedt{Bending the rules}{
+   Considering the signature Lst. \ref{fig:netBeans_board} below, we might say that the parameters are not exactly used as their name suggests, and we'd probably be right \smiley.\\
+   In fact \lstinline|oldValue| is used to pass the \textit{position} of the tile, while the \lstinline|newValue| is used to pass the new \textit{label} of the tile.\\
+   I chose to pass the position in the event to avoid making the Controller check the position of the requesting tile using methods (e.g. \lstinline|((EightTile) pce.getSource()).getPosition()|) as the assignment requires.
+   \note{It is needed to wrap position because in case \lstinline|oldValue == newValue| the event is not fired, and it is not unlikely that \lstinline|position == newLabel|.}
+   }
+   {
+      \begin{lstlisting}[label=lst:fireVetoableChange,captionpos=b,caption={How \lstinline|fireVetoableChange| is used in \lstinline|EightTile|}]
+         // Signature of fireVetoableChange
+         fireVetoableChange(String propertyName, Object oldValue, Object newValue)
+         // How it is used in EightTile
+         this.mVcs.fireVetoableChange(propertyName, new IntWrapper(this.position), newLabel);
+      \end{lstlisting}
+   }
+
+\lstinline|EightController| which a \lstinline|vetoableChangeListener|, checks if the requesting tile is adjacent to the hole, and if so, it allows the change, otherwise throws an exception.
+In case an \lstinline|EightTile| successfully moves, fires an \lstinline|ActionEvent("swapOK")|, which is listened by all other tiles, so that the tile ---typically the \textit{hole}, unless it's a \textit{Flip}--- which has been swapped can update its label.
+The requested label is obtained by listener by invoking on the event source \lstinline|getClientProperty("requestedLabel")|.
+\note{7 tiles out of 8 listen to the event uselessly, the clicked tile could send it only to the hole, but it would require for it to have a reference to the tile currently holding the hole; for simplicity and readability, I chose to make all tiles listen to the event.}
+
+
+\section{Flip Button}
