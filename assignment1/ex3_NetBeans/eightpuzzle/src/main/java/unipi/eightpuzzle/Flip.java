@@ -73,7 +73,7 @@ public class Flip extends JButton implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent ae) {
         JButton source = (JButton) ae.getSource();
-        if("restart".equals(source.getActionCommand())){
+        if("restart".equals(ae.getActionCommand())){
             int[] permutation = (int[]) source.getClientProperty("permutation");
             // label in position 1 is the 1st in the permutation array
             // and that the label in position 2 is the 2nd in the permutation array
@@ -83,7 +83,7 @@ public class Flip extends JButton implements ActionListener {
 
         }
         
-        if("swapOK".equals(source.getActionCommand())
+        if("swapOK".equals(ae.getActionCommand())
                 // the swap is a regular move, not a flip
                 && (int) source.getClientProperty("requestedLabel") == 9){
             

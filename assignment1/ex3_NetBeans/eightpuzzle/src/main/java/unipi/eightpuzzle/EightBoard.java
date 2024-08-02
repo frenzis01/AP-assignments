@@ -1,6 +1,7 @@
 package unipi.eightpuzzle;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,8 +42,8 @@ public class EightBoard extends javax.swing.JFrame {
         flip1.addActionListener((ActionEvent ae) -> {
             // Attempt to Flip tiles
             if (flip1.flipTiles()){
-                // Note that getLabel1() yields the label which will go in the position
-                // after (!) the swap, not the current one. 
+                // Note that getLabel1() yields the label which will go in the position 
+               // after (!) the swap, not the current one. 
                 // Checking terminal output might help understand
                 // i.e. tile_1=4 && tile_2=7  =>  getLabel1()=7
                 eightTile1.putClientProperty("requestedLabel", flip1.getLabel1());
@@ -73,6 +74,12 @@ public class EightBoard extends javax.swing.JFrame {
         
         
         for (EightTile t : tiles) {
+            // A tile listens for the events fired by other tiles expect itself
+            Stream  .of(tiles)
+                    .filter(tile -> tile.getPosition() != t.getPosition())
+                    .forEach(tile -> tile.addActionListener(t));
+            t.addActionListener(flip1);
+            
             // When clicked a tile requests to be swapped with the hole
             t.setActionCommand("swapRequest");
             t.putClientProperty("clickedTile",t.getMyLabel());
@@ -94,37 +101,24 @@ public class EightBoard extends javax.swing.JFrame {
                         // but the other tile (old hole) has yet to update its label
                         // it will be done once it hears swapOK
                         System.out.println("Position " + t.getPosition() + " requested label " + requestedLabel + " and sent (old) label" + t.getClientProperty("clickedTile"));
-                        
-                        // We will fire a second event labeled "swapOK"
-                        // Every listener will know that the tile swap was successful
-                        t.setActionCommand("swapOK");
-                        // This is needed by Flip button to know where the hole is
                         t.putClientProperty("swappedLabel", oldLabel);
-                        // Fire swapOK event to all listeners,
-                        // so that the old hole updates its label
-                        t.doClick();
+
+                        // Create a new ActionEvent for swapOK
+                        ActionEvent swapOKEvent = new ActionEvent(t, ActionEvent.ACTION_PERFORMED, "swapOK");
+                        // Fire the swapOK event to all listeners
+                        for (ActionListener listener : t.getActionListeners()) {
+                            listener.actionPerformed(swapOKEvent);
+                        }
+
+                        SwingUtilities.invokeLater(() -> {
+                            t.setActionCommand("swapRequest");
+                            t.putClientProperty("requestedLabel", 9);
+                            t.putClientProperty("clickedTile", t.getMyLabel());
+                        });
                     }
                 }
-                if ("swapOK".equals(ae.getActionCommand()) ){
-                    // Need to revert back to previous actionCommand 'swapRequest'
-                    
-                    // invokeLater is needed to ensure sequentiality
-                    //    i.e. swapRequest -> swapOK
-                    // Otherwise some Tile might lose the swapOK sent
-                    // by t.doClick()
-                    SwingUtilities.invokeLater(() -> {
-                        t.setActionCommand("swapRequest");
-                        t.putClientProperty("requestedLabel", 9);
-                        t.putClientProperty("clickedTile",t.getMyLabel());
-                    });
-                }
-
             });
-            // A tile listens for the events fired by other tiles expect itself
-            Stream  .of(tiles)
-                    .filter(tile -> tile.getPosition() != t.getPosition())
-                    .forEach(tile -> tile.addActionListener(t));
-            t.addActionListener(flip1);
+            
         }
         
     }

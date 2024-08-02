@@ -37,40 +37,45 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
     @Override
     public void vetoableChange(PropertyChangeEvent pce) throws PropertyVetoException {
         // this corresponds to the event fired by EightTile.labelRequest
-        if ("labelSwap".equals(pce.getPropertyName())) {
-            // Here we work with positions, not labels
-            // labels are handled by the tiles theirselves
-            
-            /**
-             * int tileToBeMoved = ((EightTile) pce.getSource()).getPosition();
-             * 
-             * The assignment requires to do not use methods to read 'labels', 
-             * but assuming that this applies also to 'position', 
-             * we avoid the statement above, in favour of exploiting 
-             * pce.oldValue to pass the position.
-             * 
-             * position must be wrapped, otherwise in case oldValue == newValue
-             * the event does not get fired.
-             * (it clearly may happen that position == newLabel)
-            */
-            int tileToBeMoved = ((IntWrapper) pce.getOldValue()).value;
-            
-            System.out.println("Clicked : " + tileToBeMoved + " | Hole : " + this.hole);
-            if (false == this.adj.contains(tileToBeMoved)) {
-                this.setText("KO");
-                throw new PropertyVetoException("Tile is not adjacent to hole", pce);
+        if ("label".equals(pce.getPropertyName())) {
+            // tile got clicked
+            if ((int) pce.getNewValue() == 9) {
+
+                // Here we work with positions, not labels
+                // labels are handled by the tiles theirselves
+                /**
+                 * int tileToBeMoved = ((EightTile)
+                 * pce.getSource()).getPosition();
+                 *
+                 * The assignment requires to do not use methods to read
+                 * 'labels', but assuming that this applies also to 'position',
+                 * we avoid the statement above, in favour of exploiting
+                 * pce.oldValue to pass the position.
+                 *
+                 * position must be wrapped, otherwise in case oldValue ==
+                 * newValue the event does not get fired. (it clearly may happen
+                 * that position == newLabel)
+                 */
+                int tileToBeMoved = ((IntWrapper) pce.getOldValue()).value;
+
+                System.out.println("Clicked : " + tileToBeMoved + " | Hole : " + this.hole);
+                if (false == this.adj.contains(tileToBeMoved)) {
+                    this.setText("KO");
+                    throw new PropertyVetoException("Tile is not adjacent to hole", pce);
+                }
+                // If tile can be moved, update hole
+                this.setHole(tileToBeMoved);
+                this.setText("OK");
+                // No exception is thrown, so the method invoking the change may proceed
             }
-            // If tile can be moved, update hole
-            this.setHole(tileToBeMoved);
-            this.setText("OK");
-            // No exception is thrown, so the method invoking the change may proceed
         }
-        if ("flip".equals(pce.getPropertyName())){
-            if (this.hole != 9){
-                throw new PropertyVetoException("Hole is not in the middle",pce);
+            if (("label".equals(pce.getPropertyName()) && (int) pce.getNewValue() != 9) ||
+                "flip".equals(pce.getPropertyName())){
+                // Flip button got pressed
+                if (this.hole != 9) {
+                    throw new PropertyVetoException("Hole is not in the middle", pce);
+                }
             }
-            
-        }
     }
     
     /**
@@ -91,7 +96,7 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
     @Override
     public void actionPerformed(ActionEvent ae) {
         JButton source = (JButton) ae.getSource();
-        if(source.getActionCommand().equals("restart")){
+        if(ae.getActionCommand().equals("restart")){
             // get permutation from restartButton's properties
             int[] permutation = (int[]) source.getClientProperty("permutation");
             this.setHole(1+indexOf(permutation,9));

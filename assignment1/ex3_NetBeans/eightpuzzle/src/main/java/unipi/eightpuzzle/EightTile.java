@@ -40,7 +40,7 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
     // function invoked on click
     public boolean labelRequest (int newLabel) {
         try{
-            String propertyName = newLabel == 9 ? "labelSwap" : "flip";
+            String propertyName = "label";
             /**
              * this.mVcs.fireVetoableChange(propertyName, this.label, newLabel);
              * 
@@ -88,16 +88,16 @@ public class EightTile extends javax.swing.JButton implements ActionListener{
     @Override
     public void actionPerformed(ActionEvent ae) { 
         JButton source = (JButton) ae.getSource();
-        if("restart".equals(source.getActionCommand())){
+        if("restart".equals(ae.getActionCommand())){
             int[] permutation = (int[]) source.getClientProperty("permutation");
             this.restart(permutation);
         }
         // If a swap has been approved by the Controller && this tile holds the requested Label then update the label of this Tile.
         // Assume the label from the requesting tile has already been updated, its not this tile's responsability to handle such thing
-        if("swapOK".equals(source.getActionCommand()) && (this.label == (int)source.getClientProperty("requestedLabel"))){
+        if("swapOK".equals(ae.getActionCommand()) && (this.label == (int)source.getClientProperty("requestedLabel"))){
             int newLabel = (int) source.getClientProperty("clickedTile");
             // ((EightTile)source).getPosition() is a bit hacky, but it's just for debug/readability print
-            System.out.println(position + ":" + label + " received label " + newLabel + " by position" + ((EightTile)source).getPosition());
+            System.out.println(position + ":" + label + " received label " + newLabel + " by position " + ((EightTile)source).getPosition());
             this.updateLabel(newLabel);
             this.putClientProperty("clickedTile",newLabel);
             
