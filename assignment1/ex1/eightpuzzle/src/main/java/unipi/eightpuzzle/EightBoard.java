@@ -155,14 +155,14 @@ public class EightBoard extends javax.swing.JFrame {
 
         jInternalFrame1 = new javax.swing.JInternalFrame();
         eightTile1 = new unipi.eightpuzzle.EightTile(1,1);
-        eightTile3 = new unipi.eightpuzzle.EightTile(3,3);
-        eightTile5 = new unipi.eightpuzzle.EightTile(5,5);
-        eightTile7 = new unipi.eightpuzzle.EightTile(7,7);
-        eightTile9 = new unipi.eightpuzzle.EightTile(9,9);
         eightTile2 = new unipi.eightpuzzle.EightTile(2,2);
+        eightTile3 = new unipi.eightpuzzle.EightTile(3,3);
         eightTile4 = new unipi.eightpuzzle.EightTile(4,4);
-        eightTile8 = new unipi.eightpuzzle.EightTile(8,8);
+        eightTile5 = new unipi.eightpuzzle.EightTile(5,5);
         eightTile6 = new unipi.eightpuzzle.EightTile(6,6);
+        eightTile7 = new unipi.eightpuzzle.EightTile(7,7);
+        eightTile8 = new unipi.eightpuzzle.EightTile(8,8);
+        eightTile9 = new unipi.eightpuzzle.EightTile(9,9);
         jInternalFrame2 = new javax.swing.JInternalFrame();
         eightController1 = new unipi.eightpuzzle.EightController();
         restart = new javax.swing.JButton();
@@ -176,29 +176,29 @@ public class EightBoard extends javax.swing.JFrame {
         eightTile1.setText("eightTile1");
         jInternalFrame1.getContentPane().add(eightTile1);
 
-        eightTile3.setText("eightTile3");
-        jInternalFrame1.getContentPane().add(eightTile3);
-
-        eightTile5.setText("eightTile5");
-        jInternalFrame1.getContentPane().add(eightTile5);
-
-        eightTile7.setText("eightTile7");
-        jInternalFrame1.getContentPane().add(eightTile7);
-
-        eightTile9.setText("eightTile9");
-        jInternalFrame1.getContentPane().add(eightTile9);
-
         eightTile2.setText("eightTile2");
         jInternalFrame1.getContentPane().add(eightTile2);
+
+        eightTile3.setText("eightTile3");
+        jInternalFrame1.getContentPane().add(eightTile3);
 
         eightTile4.setText("eightTile4");
         jInternalFrame1.getContentPane().add(eightTile4);
 
-        eightTile8.setText("eightTile8");
-        jInternalFrame1.getContentPane().add(eightTile8);
+        eightTile5.setText("eightTile5");
+        jInternalFrame1.getContentPane().add(eightTile5);
 
         eightTile6.setText("eightTile6");
         jInternalFrame1.getContentPane().add(eightTile6);
+
+        eightTile7.setText("eightTile7");
+        jInternalFrame1.getContentPane().add(eightTile7);
+
+        eightTile8.setText("eightTile8");
+        jInternalFrame1.getContentPane().add(eightTile8);
+
+        eightTile9.setText("eightTile9");
+        jInternalFrame1.getContentPane().add(eightTile9);
 
         jInternalFrame2.setVisible(true);
         jInternalFrame2.getContentPane().setLayout(new java.awt.GridLayout(1, 3));
@@ -214,8 +214,6 @@ public class EightBoard extends javax.swing.JFrame {
             }
         });
         jInternalFrame2.getContentPane().add(restart);
-
-        flip1.setText("FLIP");
         jInternalFrame2.getContentPane().add(flip1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

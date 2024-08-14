@@ -72,7 +72,7 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
             if (("label".equals(pce.getPropertyName()) && (int) pce.getNewValue() != 9) ||
                 "flip".equals(pce.getPropertyName())){
                 // Flip button got pressed
-                if (this.hole != 9) {
+                if (this.hole != 5) {
                     throw new PropertyVetoException("Hole is not in the middle", pce);
                 }
             }
@@ -134,7 +134,9 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         // intuitive adjacent positions calculation,
         // but other approaches may be possible
         
-        int pos = mapPosToGridInverse(p);
+        // int pos = mapPosToGridInverse(p);
+        int pos = p;
+
         
         // Upper tile
         if (pos + 3 <= 9)
@@ -152,7 +154,8 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         if ((pos - 1) % 3 != 0) // pos not in leftmost column
             adj.add(pos - 1);
         
-        return adj.stream().map(EightController::mapPosToGrid).toList();
+        // return adj.stream().map(EightController::mapPosToGrid).toList();
+        return adj;
     }
     
     private static int mapPosToGrid (int pos){
