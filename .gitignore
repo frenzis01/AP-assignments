@@ -2,6 +2,7 @@ assignment1/ex2/*.class
 
 assignment1/ex1/*
 !assignment1/ex1/eightpuzzle/
+!assignment1/ex1/netbeans.zip
 
 assignment1/ex1/eightpuzzle/*
 !assignment1/ex1/eightpuzzle/src/
