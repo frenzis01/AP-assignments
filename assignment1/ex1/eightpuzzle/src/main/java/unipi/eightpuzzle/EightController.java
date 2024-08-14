@@ -134,7 +134,6 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         // intuitive adjacent positions calculation,
         // but other approaches may be possible
         
-        // int pos = mapPosToGridInverse(p);
         int pos = p;
 
         
@@ -154,47 +153,6 @@ public class EightController extends JLabel implements VetoableChangeListener,Ac
         if ((pos - 1) % 3 != 0) // pos not in leftmost column
             adj.add(pos - 1);
         
-        // return adj.stream().map(EightController::mapPosToGrid).toList();
         return adj;
-    }
-    
-    private static int mapPosToGrid (int pos){
-        /**
-         * 1 2 3      1 3 5
-         * 4 5 6  ->  7 9 2
-         * 7 8 9      4 6 8
-         */
-        switch(pos) {
-            case 1: return 1;
-            case 2: return 3;
-            case 3: return 5;
-            case 4: return 7;
-            case 5: return 9;
-            case 6: return 2;
-            case 7: return 4;
-            case 8: return 8;
-            case 9: return 6;
-            default: return 0;
-        }       
-    }
-    
-    private static int mapPosToGridInverse (int pos){
-        /**
-         * 1 3 5      1 2 3
-         * 7 9 2  ->  4 5 6
-         * 4 8 6      7 8 9
-         */
-        switch(pos) {
-            case 1: return 1;
-            case 3: return 2;
-            case 5: return 3;
-            case 7: return 4;
-            case 9: return 5;
-            case 2: return 6;
-            case 4: return 7;
-            case 8: return 8;
-            case 6: return 9;
-            default: return 0;
-        }   
     }
 }
