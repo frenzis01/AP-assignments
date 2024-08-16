@@ -18,4 +18,4 @@ jar cfvm ../jars/EightBoard.jar ../jars/MANIFEST.MF \
  $CLASSES/Flip.class \
  $CLASSES/Flip'$'1.class
 
-
+chmod +x ../jars/EightBoard.jar
