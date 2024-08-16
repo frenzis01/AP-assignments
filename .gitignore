@@ -6,6 +6,10 @@ assignment1/ex1/*
 
 assignment1/ex1/eightpuzzle/*
 !assignment1/ex1/eightpuzzle/src/
+!assignment1/ex1/eightpuzzle/target/
+
+assignment1/ex1/eightpuzzle/target/*
+!assignment1/ex1/eightpuzzle/target/jars
 
 assignment1/ex1/eightpuzzle/src/*
 !assignment1/ex1/eightpuzzle/src/main/
@@ -28,6 +32,5 @@ assignment2/part1/output/*
 # assignment2/part1/build.sh
 assignment2/part1/.vscode
 
-*.jar
-*.arj
-/assignment1/ex1/eightpuzzle/target/
+# *.jar
+# *.arj
