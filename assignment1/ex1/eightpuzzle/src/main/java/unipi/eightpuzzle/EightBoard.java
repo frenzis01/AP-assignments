@@ -79,46 +79,6 @@ public class EightBoard extends javax.swing.JFrame {
                     .filter(tile -> tile.getPosition() != t.getPosition())
                     .forEach(tile -> tile.addActionListener(t));
             t.addActionListener(flip1);
-            
-            // When clicked a tile requests to be swapped with the hole
-            t.setActionCommand("swapRequest");
-            t.putClientProperty("clickedTile",t.getMyLabel());
-            // A tile will always (unless 'Flip') request to be swapped with the hole
-            // label == 9 => Hole
-            t.putClientProperty("requestedLabel", 9);
-            
-            // We have a dedicated listener for each tile to handle the tile being clicked
-            t.addActionListener((ActionEvent ae) -> {
-                if ("swapRequest".equals(ae.getActionCommand())) {
-                    int 
-                            oldLabel = t.getMyLabel(),
-                            requestedLabel = (int) t.getClientProperty("requestedLabel");
-
-                    // requestedLabel is always 9 unless t == eightTile1 and flip has been clicked
-                    // labelRequest returns false is the change gets blocked by Controller
-                    if (t.labelRequest(requestedLabel)) { 
-                        // if here, tile can be successfully moved and has updated its label becoming the new hole,
-                        // but the other tile (old hole) has yet to update its label
-                        // it will be done once it hears swapOK
-                        System.out.println("Position " + t.getPosition() + " requested label " + requestedLabel + " and sent (old) label" + t.getClientProperty("clickedTile"));
-                        t.putClientProperty("swappedLabel", oldLabel);
-
-                        // Create a new ActionEvent for swapOK
-                        ActionEvent swapOKEvent = new ActionEvent(t, ActionEvent.ACTION_PERFORMED, "swapOK");
-                        // Fire the swapOK event to all listeners
-                        for (ActionListener listener : t.getActionListeners()) {
-                            listener.actionPerformed(swapOKEvent);
-                        }
-
-                        SwingUtilities.invokeLater(() -> {
-                            t.setActionCommand("swapRequest");
-                            t.putClientProperty("requestedLabel", 9);
-                            t.putClientProperty("clickedTile", t.getMyLabel());
-                        });
-                    }
-                }
-            });
-            
         }
         
     }
