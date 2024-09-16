@@ -51,6 +51,8 @@ public class XMLSerializer {
          // add class name first
          serializedObj.add("<" + c.name + ">");
 
+         // We use a pair to keep track of Field info (actually only .name()), and to avoid
+         // computing f.getAnnotation(XMLfield.class) multiple times
          for (Pair<Field,XMLfield> p : c.labeledFields) {
             Field f = p.getA();
             XMLfield a = p.getB();

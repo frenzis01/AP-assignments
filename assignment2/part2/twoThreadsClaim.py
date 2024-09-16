@@ -130,3 +130,16 @@ def main():
 
 if __name__ == "__main__":
    main()
+  
+  
+# "Two threads calling a function may take twice as much time as a single thread calling the function twice"
+# From the `grezzo` execution we can observe that the exec time increases along with n_threads, almost doubling -about 1.5x-,
+# as expected
+# 
+# `just_wait` instead which represents I/O bound tasks, shows that the exec time per thread halves, as the number of threads doubles,
+# since a thread waits part of the time when another is scheduled.
+# 
+# `fib_run` yields a similar result to `grezzo`, as it is a raw CPU workload, and the exec time increases with the number of threads.
+# `fib_run_recursive` instead, shows a different behaviour, as the exec time per thread slightly increases, 
+# but not as much as in the other cases.
+# However, both of these two show slightly higher variance than `grezzo`.

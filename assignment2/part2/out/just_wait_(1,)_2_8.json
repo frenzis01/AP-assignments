@@ -6,7 +6,7 @@
    "n_threads": 2,
    "seq_iter": 8,
    "iter": 5,
-   "mean": 0.8021667636003258,
-   "variance": 6.004758861213815e-08,
-   "single_thread_time": 1.6035406060000241
+   "mean": 0.8020709512000395,
+   "variance": 6.626833854742247e-09,
+   "single_thread_time": 1.6037785230000736
 }

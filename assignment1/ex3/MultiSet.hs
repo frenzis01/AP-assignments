@@ -17,8 +17,6 @@ module MultiSet (
    mapMSet,
    basictest) where
 
-import Data.List (foldl')
-
 data MSet a = MS [(a,Int)] deriving (Show)
 
 
@@ -93,6 +91,10 @@ to instantiate the Eq typeclass, so a correct fmap implementation would have the
    fmap::Eq b => (a -> b) -> MSet a -> MSet b
 which does not allow to instantiate Functor, which requires the signature for fmap to be unconstrained
     fmap :: (a -> b) -> f a -> f b
+
+More generally, "the structure of the functor remains unchanged, only the values are modified";
+this law cannot apply to out MSet since mapping more keys to the same value would imply to remove old keys and
+recompute the multiplicity of the new key, hence modifying the structure of the MSet. 
 -}
 
 
