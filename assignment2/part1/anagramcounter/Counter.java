@@ -8,5 +8,10 @@ public class Counter {
       JobSchedulerContext<String,String> ct = new JobSchedulerContext<>(st);
       // inversion of control
       ct.process();
+
+      // Let's process again but changing the output to CSV
+      // st = new ReadFileStrategyCSV();
+      // ct = new JobSchedulerContext<>(st);
+      // ct.process();
    }
 }
