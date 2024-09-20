@@ -119,7 +119,7 @@ def grezzo(n):
 
 def main():
    test(iter=5,fun=just_wait,args=(1,))
-   test(iter=5,fun=grezzo,args=(10,))
+   test(iter=5,fun=grezzo,args=(20,))
    test(iter=5,fun=fib_run,args=(15,))
    test(iter=5,fun=fib_run_recursive,args=(15,))
 
@@ -133,8 +133,11 @@ if __name__ == "__main__":
   
   
 # "Two threads calling a function may take twice as much time as a single thread calling the function twice"
-# From the `grezzo` execution we can observe that the exec time increases along with n_threads, almost doubling -about 1.5x-,
+# From the `grezzo(10)` execution we can observe that the exec time increases along with n_threads, almost doubling -about 1.5x-,
 # as expected
+# However, if we execute grezzo(20), the exec time per thread is almost the same, probably due to the high workload (2**20 iterations);
+# we can observe also considerably higher variance in the exec times.
+# 
 # 
 # `just_wait` instead which represents I/O bound tasks, shows that the exec time per thread halves, as the number of threads doubles,
 # since a thread waits part of the time when another is scheduled.
