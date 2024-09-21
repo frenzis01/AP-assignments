@@ -67,7 +67,7 @@ When an \lstinline|EightTile| gets clicked it attempts to swap its position to t
       \end{lstlisting}
    }
 
-\lstinline|EightController| which a \lstinline|vetoableChangeListener|, checks if the requesting tile is adjacent to the hole, and if so, it allows the change, otherwise throws an exception.
+\lstinline|EightController| which is a \lstinline|vetoableChangeListener|, checks if the requesting tile is adjacent to the hole, and if so, it allows the change, otherwise throws an exception.
 In case an \lstinline|EightTile| successfully moves, fires an \lstinline|ActionEvent("swapOK")|\footnote{Almost analogous behaviour may be obtained by using \lstinline|PropertyChangeEvent|}, which is listened by all other tiles, so that the tile ---typically the \textit{hole}, unless it's a \textit{Flip}--- which has been swapped can update its label.
 The requested label is obtained by listener by invoking on the event source \lstinline|getClientProperty("requestedLabel")|.
 \note{7 tiles out of 8 listen to the event uselessly, the clicked tile could send it only to the hole, but it would require for it to have a reference to the tile currently holding the hole; for simplicity and readability, I chose to make all tiles listen to the event.}
@@ -81,7 +81,7 @@ The restart button generates an array representing a permutation of the labels -
 
 The \lstinline|Flip| button is not aware of the labels of the tiles, it only knows the position of the hole, and the labels of the tiles in position 1 and 2; the button listens for \lstinline|"restart"| and \lstinline|"swapOK"| events, to update its state.
 
-When clicked, it emits an event \lstinline|"flip"|, which is listened by the \lstinline|EightController|, which checks if the hole is in the middle, if so the button updates its \textit{internal state} (\lstinline|label1| and \lstinline|label2|).\\
+When clicked, it emits an event \lstinline|"flip"|, which is listened by the \lstinline|EightController|, which checks if the hole is in the bottom right corner, if so the button updates its \textit{internal state} (\lstinline|label1| and \lstinline|label2|).\\
 To implement the actual Flip on the tiles, the label update is delegated to the tiles theirselves by simply setting the \lstinline|"requestedLabel"| property of the tile in position 1 to the label of the tile in position 2, and then mimicking a click on the tile in position 1.
 
 \begin{lstlisting}
@@ -94,4 +94,4 @@ To implement the actual Flip on the tiles, the label update is delegated to the 
 \end{lstlisting}
 
 The change will be again vetoed ---as it happens for swapping a tile upon a click--- by \lstinline|EightController| which will notice that the requested label is not the hole, and will allow the change.
-\note{The controller checks that the hole is in the middle even if at this point the hole should be there; this double check is not necessary.}
+\note{The controller checks that the hole is in the bottom right corner even if at this point the hole should be there; this double check is not necessary.}

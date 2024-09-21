@@ -1,6 +1,7 @@
 package anagramcounter;
 
 import java.io.BufferedWriter;
+import java.io.Console;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -8,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Stream;
 
 import strategyjobscheduler.*;
@@ -22,15 +22,20 @@ public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
    @Override
    public Stream<AJob<String, String>> emit() {
       String userinput;
-      Path path;
-      Scanner scanner = new Scanner(System.in); // Create a Scanner object
-      do {
-         System.out.println("Enter (valid) path to directory");
+      Path path = null;
 
-         userinput = scanner.nextLine(); // Read user input
-         path = Paths.get(userinput);
+      // Using console for stdin allows multiple reuse
+      Console console = System.console();
+
+      if (console == null) {
+          System.out.println("No console available");
+          return Stream.empty();
+      }
+  
+      do {
+          userinput = console.readLine("Enter (valid) path to directory: "); // Read user input
+          path = Paths.get(userinput);
       } while (!path.toFile().isDirectory());
-      scanner.close();
 
       return Utils.getFilesFromDir(path).map((f) -> new ReadFileJob(f));
    }

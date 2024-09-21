@@ -10,8 +10,8 @@ public class Counter {
       ct.process();
 
       // Let's process again but changing the output to CSV
-      // st = new ReadFileStrategyCSV();
-      // ct = new JobSchedulerContext<>(st);
-      // ct.process();
+      st = new ReadFileStrategyCSV();
+      ct = new JobSchedulerContext<>(st);
+      ct.process();
    }
 }
