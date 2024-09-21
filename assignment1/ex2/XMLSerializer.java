@@ -36,7 +36,7 @@ public class XMLSerializer {
        * @param fileName path of output file
        */
       static void serialize(Object [ ] arr, String fileName) {
-      List<String> xmlResult = new ArrayList<>(List.of("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
+      List<String> xmlResult = new ArrayList<>(List.of("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<root>"));
       for (Object o : arr) {
          
          // Perform lookup to avoid introspecting multiple times an already encountered class
@@ -76,6 +76,7 @@ public class XMLSerializer {
       }
 
       Path filePath = Paths.get(fileName);
+      xmlResult.add("</root>");
       String result = String.join("\n", xmlResult);
       try {
          // Write the string to the file
@@ -149,7 +150,7 @@ public class XMLSerializer {
       // value == null is a valid case
       if (type == "" || name == "")
          throw new IllegalArgumentException();
-      return "<" + name + " type= " + type + ">" + value + "</" + name + ">";
+      return "<" + name + " type= \"" + type + "\">" + value + "</" + name + ">";
    }
 
    // Immutable pair
