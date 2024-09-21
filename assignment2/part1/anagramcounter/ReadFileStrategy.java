@@ -102,7 +102,7 @@ public class ReadFileStrategy extends JobSchedulerStrategy<String, String> {
       if (!path.toFile().isFile() || !path.toString().endsWith(".txt"))
          throw new IllegalArgumentException();
       return Files.lines(path)
-            .flatMap(line -> Stream.of(line.split("\\s+|(?<=[\\s\\n])|(?=[\\s\\n])")))
+            .flatMap(line -> Stream.of(line.split("\\W+")))
             .map(String::toLowerCase)
             .filter(w -> w.length() >= 4 && w.matches("[a-z]+"));
    }
